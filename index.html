@@ -452,7 +452,8 @@ function doLogin() {
     document.getElementById('agent').value = agentName;
   }
   buildFraisTable();
-  loadParams().then(() => { updateLivrBadge(); show(ROLE === 'manager' ? 'dashboard' : 'recap'); });
+  show(ROLE === 'manager' ? 'dashboard' : 'recap');
+  loadParams().then(() => { updateLivrBadge(); });
 }
 
 // ── NAV
