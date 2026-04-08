@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpilles Automobile – Gestion</title>
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap");
+:root{
+  --noir:#1a1a1a;--gm:#5a5a5a;--gc:#e8e4de;--beige:#f5f1ea;--blanc:#fafaf8;
+  --accent:#c8a96e;--ad:#9e7d45;--rouge:#c0392b;--vert:#27704d;--vl:#eaf5ee;
+  --border:#ccc8c0;--bleu:#1a56d6;--orange:#e67e22;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e0dbd3;font-family:"IBM Plex Sans",sans-serif;color:var(--noir);min-height:100vh}
+.nav{background:var(--noir);display:flex;align-items:stretch;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.nb{padding:.8rem 1.5rem;display:flex;flex-direction:column;justify-content:center;border-right:1px solid #333}
+.nbt{font-family:"Libre Baskerville",serif;font-size:.9rem;font-weight:700;color:var(--blanc);letter-spacing:.04em;text-transform:uppercase}
+.nbs{font-family:"IBM Plex Mono",monospace;font-size:.48rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-top:.1rem}
+.ntabs{display:flex;flex:1;overflow-x:auto}
+.ntab{padding:0 1.1rem;display:flex;align-items:center;gap:.35rem;font-family:"IBM Plex Mono",monospace;font-size:.58rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;border-top:none;border-left:none;border-right:none;background:none;white-space:nowrap;height:100%}
+.ntab:hover{color:var(--blanc)}.ntab.active{color:var(--blanc);border-bottom:3px solid var(--accent)}
+.nbadge{background:var(--accent);color:var(--noir);font-size:.48rem;padding:.1rem .3rem;margin-left:.2rem;font-weight:700;border-radius:2px}
+.nrole{padding:0 1rem;display:flex;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:.58rem;color:var(--accent);border-left:1px solid #333;white-space:nowrap}
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center}
+.lc{background:var(--blanc);border-top:4px solid var(--noir);padding:2.5rem;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.lt{font-family:"Libre Baskerville",serif;font-size:1.3rem;font-weight:700;text-transform:uppercase;margin-bottom:.2rem}
+.lsub{font-family:"IBM Plex Mono",monospace;font-size:.6rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:2rem}
+.lf{margin-bottom:1rem}
+.lf label{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);display:block;margin-bottom:.3rem}
+.lf select,.lf input{width:100%;border:1.5px solid var(--border);background:var(--blanc);font-family:"IBM Plex Mono",monospace;font-size:.9rem;padding:.5rem .7rem;outline:none;transition:border-color .2s}
+.lf select:focus,.lf input:focus{border-color:var(--accent)}
+.lbtn{width:100%;background:var(--noir);color:var(--blanc);border:none;font-family:"IBM Plex Mono",monospace;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.75rem;cursor:pointer;margin-top:.5rem;transition:background .15s}
+.lbtn:hover{background:#333}
+.lerr{background:#fde8e8;border:1px solid var(--rouge);color:var(--rouge);font-size:.75rem;padding:.5rem .7rem;margin-top:.8rem;display:none}
+.pv{display:none;padding:1.5rem 1rem;min-height:calc(100vh - 52px)}.pv.active{display:block}
+.card{max-width:940px;margin:0 auto 1.5rem;background:var(--blanc);box-shadow:0 4px 24px rgba(0,0,0,.1);border-top:4px solid var(--noir)}
+.ch{background:var(--noir);color:var(--blanc);padding:1.2rem 1.8rem;display:flex;align-items:center;justify-content:space-between}
+.ct{font-family:"Libre Baskerville",serif;font-size:1rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.cs{font-family:"IBM Plex Mono",monospace;font-size:.55rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
+.cb{padding:1.5rem 1.8rem}
+.acts{display:flex;gap:.6rem;margin-bottom:1.4rem;justify-content:flex-end;flex-wrap:wrap}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:.6rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .9rem;border:1.5px solid var(--noir);background:transparent;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--noir);color:var(--blanc)}.btn-p{background:var(--noir);color:var(--blanc)}
+.btn-s{background:var(--vert);color:var(--blanc);border-color:var(--vert)}.btn-s:hover{background:#1e5a3a}
+.btn-d{border-color:var(--rouge);color:var(--rouge)}.btn-d:hover{background:var(--rouge);color:var(--blanc)}
+.sec{margin-bottom:1.6rem}
+.stitle{font-family:"Libre Baskerville",serif;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);border-bottom:1px solid var(--border);padding-bottom:.3rem;margin-bottom:.8rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem 1.6rem}
+.field{display:flex;flex-direction:column;gap:.2rem}.field.full{grid-column:1/-1}
+label{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm)}
+input[type=text],input[type=number],input[type=date],select{border:none;border-bottom:1.5px solid var(--border);background:transparent;font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--noir);padding:.25rem 0;outline:none;width:100%;transition:border-color .2s}
+input:focus,select:focus{border-bottom-color:var(--accent)}
+input[readonly]{color:var(--gm);cursor:default}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+thead tr{background:var(--noir);color:var(--blanc)}
+thead th{padding:.45rem .7rem;text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.56rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+thead th:not(:first-child){text-align:right}
+tbody tr{border-bottom:1px solid var(--gc)}
+tbody tr:hover{background:rgba(200,169,110,.06)}
+tbody td{padding:.4rem .7rem;vertical-align:middle}
+tbody td:not(:first-child){text-align:right}
+.tdl{font-size:.77rem;color:#2d2d2d}
+.ni{text-align:right;width:110px;font-size:.8rem}
+.cmp{font-family:"IBM Plex Mono",monospace;font-size:.8rem;font-weight:500}
+.neg{color:var(--rouge)}.pos{color:var(--vert)}
+.trow td{background:var(--gc);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.82rem;padding:.55rem .7rem}
+.rmarge td{background:var(--noir)!important;color:var(--blanc)!important;font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.9rem;padding:.65rem .7rem}
+.ctotal td{background:var(--accent)!important;color:var(--noir)!important;font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.9rem;padding:.65rem .7rem}
+.tvab{font-family:"IBM Plex Mono",monospace;font-size:.5rem;font-weight:600;padding:.1rem .3rem;border-radius:2px;margin-left:.3rem;vertical-align:middle;background:#fde8e8;color:var(--rouge)}
+.ibox{background:var(--beige);border-left:3px solid var(--accent);padding:.6rem .85rem;font-family:"IBM Plex Mono",monospace;font-size:.7rem;margin-bottom:.85rem;color:#5a5a5a}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:.52rem;font-weight:600;padding:.1rem .35rem;text-transform:uppercase}
+.tc{background:#e8f0fe;color:#1a56d6}.ts{background:#fde8e8;color:var(--rouge)}.tcr{background:#fff3e0;color:#b45309}
+.tl{background:var(--vl);color:var(--vert)}.ta{background:#fff3e0;color:#b45309}
+.vz{margin-top:1.8rem;border-top:2px solid var(--noir);padding-top:1.2rem;display:flex;justify-content:space-between;gap:2rem}
+.vf{flex:1}.vf label{display:block;margin-bottom:.4rem}
+.vline{border-bottom:1.5px solid var(--noir);height:1.8rem}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--vert);color:var(--blanc);font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:.65rem 1.1rem;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;transform:translateY(120%);transition:transform .3s;text-transform:uppercase;max-width:320px}
+.toast.show{transform:translateY(0)}.toast.error{background:var(--rouge)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid #ccc;border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading{text-align:center;padding:2rem;color:var(--gm);font-family:"IBM Plex Mono",monospace;font-size:.75rem;display:flex;align-items:center;justify-content:center;gap:.8rem}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.3rem}
+.kpi{background:var(--blanc);padding:1rem 1.2rem;box-shadow:0 2px 10px rgba(0,0,0,.07);border-top:3px solid var(--border)}
+.kpi.hl{border-top-color:var(--accent)}.kpi.ok{border-top-color:var(--vert)}.kpi.info{border-top-color:var(--bleu)}.kpi.warn{border-top-color:var(--orange)}
+.kl{font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.35rem}
+.kv{font-family:"IBM Plex Mono",monospace;font-size:1.1rem;font-weight:600;color:var(--noir)}
+.ks{font-family:"IBM Plex Mono",monospace;font-size:.57rem;color:var(--gm);margin-top:.2rem}
+.msel{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap}
+.msel label{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm)}
+.msel select{border:1px solid var(--border);padding:.28rem .6rem;font-family:"IBM Plex Mono",monospace;font-size:.78rem;background:var(--blanc);cursor:pointer;outline:none}
+.atabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:1.1rem;flex-wrap:wrap}
+.atab{font-family:"IBM Plex Mono",monospace;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.5rem 1.1rem;cursor:pointer;border:none;background:transparent;color:var(--gm);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+.atab:hover{color:var(--noir)}.atab.active{color:var(--noir);border-bottom-color:var(--accent)}
+
+/* PROGRESS BARS VISUELLES */
+.obj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:1.2rem}
+.obj-card{background:var(--blanc);border:1px solid var(--border);padding:1.1rem 1.2rem;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.obj-card.done{border-color:var(--vert);background:var(--vl)}
+.obj-card.warn{border-color:var(--orange);background:#fef9f0}
+.obj-card::before{content:"";position:absolute;bottom:0;left:0;height:4px;width:100%;background:var(--gc)}
+.obj-card::after{content:"";position:absolute;bottom:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--ad));transition:width .8s cubic-bezier(.4,0,.2,1)}
+.obj-card.done::after{background:linear-gradient(90deg,#1e5a3a,var(--vert))}
+.obj-icon{font-size:1.6rem;margin-bottom:.5rem}
+.obj-label{font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.3rem}
+.obj-nums{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.35rem}
+.obj-cur{font-family:"IBM Plex Mono",monospace;font-size:2.2rem;font-weight:700;line-height:1;color:var(--noir)}
+.obj-card.done .obj-cur{color:var(--vert)}
+.obj-sep{font-family:"IBM Plex Mono",monospace;font-size:1rem;color:var(--gc)}
+.obj-tot{font-family:"IBM Plex Mono",monospace;font-size:1rem;color:var(--gm)}
+.obj-pct{font-family:"IBM Plex Mono",monospace;font-size:.75rem;font-weight:700;padding:.15rem .4rem;border-radius:2px;display:inline-block;margin-bottom:.3rem}
+.obj-pct.green{background:var(--vl);color:var(--vert)}
+.obj-pct.amber{background:#fff3e0;color:#b45309}
+.obj-pct.blue{background:#e8f0fe;color:var(--bleu)}
+.obj-status{font-size:.65rem;color:var(--gm);font-family:"IBM Plex Mono",monospace}
+
+.pay-box{background:var(--beige);padding:1rem 1.2rem;border:1px solid var(--border)}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:.38rem 0;border-bottom:1px solid var(--gc);font-size:.8rem}
+.pr:last-child{border:none}
+.pr.total{padding:.7rem 0;font-weight:700;font-family:"IBM Plex Mono",monospace;font-size:1rem;border-top:2px solid var(--noir);margin-top:.3rem}
+.total-verser{background:var(--accent);padding:.8rem 1rem;margin-top:.5rem;display:flex;justify-content:space-between;align-items:center}
+.total-verser span:first-child{font-family:"IBM Plex Mono",monospace;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--noir)}
+.total-verser span:last-child{font-family:"IBM Plex Mono",monospace;font-size:1.2rem;font-weight:700;color:var(--noir)}
+
+.vt{width:100%;border-collapse:collapse;font-size:.75rem;margin-bottom:.9rem}
+.vt thead tr{background:var(--noir);color:var(--blanc)}
+.vt thead th{padding:.4rem .65rem;text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.54rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.vt tbody tr{border-bottom:1px solid var(--gc)}
+.vt tbody tr:hover{background:rgba(200,169,110,.06)}
+.vt td{padding:.35rem .65rem;vertical-align:middle}
+.delbtn{background:none;border:none;color:#ccc;cursor:pointer;font-size:.85rem;padding:0 .25rem;transition:color .15s}
+.delbtn:hover{color:var(--rouge)}
+.editbtn{background:none;border:1px solid var(--border);color:var(--gm);cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:.52rem;padding:.15rem .4rem;transition:all .15s}
+.editbtn:hover{border-color:var(--accent);color:var(--accent)}
+
+.lcard{background:var(--blanc);border:1px solid var(--border);padding:1rem 1.2rem;margin-bottom:.8rem}
+.lcard.done{border-color:var(--vert);background:var(--vl)}
+.ldi{border:1px solid var(--border);padding:.25rem .5rem;font-family:"IBM Plex Mono",monospace;font-size:.75rem;outline:none;background:var(--blanc)}
+.ldi:focus{border-color:var(--accent)}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
+.acard{background:var(--beige);border:1px solid var(--border);padding:1rem 1.2rem}
+.acard h4{font-family:"Libre Baskerville",serif;font-size:.82rem;font-weight:700;margin-bottom:.7rem;padding-bottom:.3rem;border-bottom:2px solid var(--noir)}
+.arow{display:flex;justify-content:space-between;padding:.28rem 0;border-bottom:1px solid var(--gc);font-size:.8rem}
+.arow:last-child{border:none;font-weight:700;padding-top:.5rem}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem}
+.pcard{background:var(--beige);border:1px solid var(--border);padding:.85rem .95rem}
+.pcard h4{font-family:"Libre Baskerville",serif;font-size:.78rem;font-weight:700;margin-bottom:.65rem;padding-bottom:.3rem;border-bottom:1px solid var(--border)}
+.pf{display:flex;flex-direction:column;gap:.15rem;margin-bottom:.55rem}
+.pf label{font-size:.55rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gm)}
+.pf input{border:none;border-bottom:1px solid var(--border);background:transparent;font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--bleu);padding:.18rem 0;outline:none;width:100%}
+.cbox{background:var(--beige);border-left:3px solid var(--ad);padding:.6rem .85rem;font-family:"IBM Plex Mono",monospace;font-size:.72rem;margin-top:.5rem;color:#5a5a5a;line-height:1.7}
+
+/* MODAL MODIFICATION */
+.modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--blanc);border-top:4px solid var(--accent);padding:1.8rem;max-width:560px;width:100%;margin:1rem;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+.modal h3{font-family:"Libre Baskerville",serif;font-size:1rem;font-weight:700;margin-bottom:1.2rem;text-transform:uppercase;letter-spacing:.04em}
+.modal-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)}
+
+@media print{.nav,.acts,.toast,.atabs,.msel,.delbtn,.editbtn{display:none!important}body{background:white}.card{box-shadow:none}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}.field.full{grid-column:1}.kgrid{grid-template-columns:1fr 1fr}.pgrid{grid-template-columns:1fr}.cb{padding:1.1rem}.agrid{grid-template-columns:1fr}.obj-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="ls" class="lw">
+  <div class="lc">
+    <div class="lt">Alpilles Automobile</div>
+    <div class="lsub">Accès sécurisé · Gestion</div>
+    <div class="lf">
+      <label>Qui êtes-vous ?</label>
+      <select id="lu" onchange="document.getElementById('lerr').style.display='none'">
+        <option value="">— Sélectionner —</option>
+        <option value="julien">Julien Aranda — Manager</option>
+        <option value="Jules">Jules</option>
+        <option value="Leo">Léo</option>
+        <option value="Aurelien">Aurélien</option>
+      </select>
+    </div>
+    <div class="lf">
+      <label>Code d'accès</label>
+      <input type="text" id="lp" placeholder="1234" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <button class="lbtn" onclick="doLogin()">Accéder →</button>
+    <div class="lerr" id="lerr" style="display:none"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+<nav class="nav">
+  <div class="nb"><div class="nbt">Alpilles Automobile</div><div class="nbs">Saint-Rémy · Aix</div></div>
+  <div class="ntabs">
+    <button class="ntab active" onclick="show('fiche')" id="tab-fiche">📝 Nouvelle vente</button>
+    <button class="ntab" onclick="show('livraisons')" id="tab-livraisons">🚗 Livraisons <span class="nbadge" id="livr-badge" style="display:none"></span></button>
+    <button class="ntab" onclick="show('recap')" id="tab-recap" style="display:none">📈 Mon récap</button>
+    <button class="ntab" onclick="show('dashboard')" id="tab-dashboard" style="display:none">📊 Tableau de bord</button>
+    <button class="ntab" onclick="show('params')" id="tab-params" style="display:none">⚙️ Paramètres</button>
+  </div>
+  <div class="nrole" id="nrole"></div>
+</nav>
+<div class="toast" id="toast"></div>
+
+<!-- FICHE -->
+<div class="pv active" id="view-fiche">
+<div class="card">
+  <div class="ch"><div><div class="ct">Fiche de Gestion</div><div class="cs">Saisie d'une vente</div></div></div>
+  <div class="cb">
+    <div class="acts">
+      <button class="btn" onclick="resetForm()">Réinitialiser</button>
+      <button class="btn btn-p" onclick="window.print()">Imprimer</button>
+    </div>
+    <div class="sec">
+      <div class="stitle">Identification</div>
+      <div class="grid">
+        <div class="field"><label>Agence</label>
+          <select id="agence"><option value="">— Sélectionner —</option>
+          <option>Agence Saint-Rémy-de-Provence</option>
+          <option>Agence Aix-en-Provence</option></select></div>
+        <div class="field"><label>Agent commercial</label>
+          <select id="agent" onchange="calc()"><option value="">— Sélectionner —</option>
+          <option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+        <div class="field"><label>Date de la vente</label><input type="date" id="date_vente"></div>
+        <div class="field"><label>Nom du client</label><input type="text" id="client" placeholder="Nom Prénom"></div>
+        <div class="field"><label>Véhicule</label><input type="text" id="vehicule" placeholder="Marque Modèle Année"></div>
+        <div class="field"><label>Type de vente</label>
+          <select id="type_vente" onchange="calc()">
+            <option value="classique">Vente classique (40%)</option>
+            <option value="stock">Stock société (20%)</option>
+            <option value="croise">Mandat croisé (20%/20%)</option>
+          </select></div>
+        <div class="field" id="bloc_mandant" style="display:none"><label>Agent mandant</label>
+          <select id="agent_mandant"><option value="">— Sélectionner —</option>
+          <option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+        <div class="field"><label>Prix de vente TTC (€)</label><input type="number" id="prix_vente" placeholder="0" min="0" step="1" oninput="calc()"></div>
+        <div class="field"><label>Prix d'achat TTC (€)</label><input type="number" id="prix_achat" placeholder="0" min="0" step="1" oninput="calc()"></div>
+        <div class="field full"><label>Marge brute véhicule — calculé auto</label><input type="text" id="marge_brute" readonly placeholder="—"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="stitle">Frais</div>
+      <table><thead><tr><th>Désignation</th><th>TVA ?</th><th>Montant TTC (€)</th><th>HT (€)</th></tr></thead>
+      <tbody id="frais-tbody">
+      </tbody></table>
+    </div>
+    <div class="sec">
+      <div class="stitle">Récapitulatif</div>
+      <table><thead><tr><th>Élément</th><th>TTC (€)</th><th>HT (€)</th></tr></thead>
+      <tbody>
+        <tr><td class="tdl">Marge véhicule brute</td><td class="cmp" id="rv_ttc">—</td><td class="cmp" id="rv_ht">—</td></tr>
+        <tr><td class="tdl">Total frais</td><td class="cmp" id="rf_ttc">—</td><td class="cmp" id="rf_ht">—</td></tr>
+        <tr class="rmarge"><td>Marge nette validée</td><td class="cmp" id="mn_ttc">—</td><td class="cmp" id="mn_ht">—</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec">
+      <div class="stitle">Commission agent (HT)</div>
+      <div class="ibox" id="comm_info">—</div>
+      <table><thead><tr><th>Élément</th><th>HT (€)</th></tr></thead>
+      <tbody>
+        <tr><td class="tdl">Marge nette HT base</td><td class="cmp" id="comm_base">—</td></tr>
+        <tr><td class="tdl" id="comm_lv">Commission vendeur</td><td class="cmp" id="comm_v">—</td></tr>
+        <tr id="row_croise" style="display:none"><td colspan="2"><div class="cbox" id="croise_box">—</div></td></tr>
+        <tr><td class="tdl">Prime exceptionnelle</td><td><input class="ni" type="number" id="prime_excep" placeholder="0" step="1" oninput="calc()"></td></tr>
+        <tr class="ctotal"><td id="total_lbl">Total à verser</td><td class="cmp" id="total_agent">—</td></tr>
+      </tbody></table>
+    </div>
+    <div style="display:flex;justify-content:center;margin:1.5rem 0">
+      <button class="btn btn-s" id="btn-enreg" onclick="enregistrerVente()" style="padding:.7rem 2.5rem;font-size:.75rem;letter-spacing:.12em">✔ Enregistrer la vente</button>
+    </div>
+    <div class="vz">
+      <div class="vf"><label>Visa Julien Aranda</label><div class="vline"></div></div>
+      <div class="vf"><label>Date</label><div class="vline"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LIVRAISONS -->
+<div class="pv" id="view-livraisons">
+<div class="card">
+  <div class="ch"><div><div class="ct">Suivi des Livraisons</div><div class="cs">Paye calculée au mois de livraison · Toutes ventes en attente visibles</div></div></div>
+  <div class="cb">
+    <div class="msel">
+      <label>Mois affiché</label>
+      <select id="livr_mois" onchange="renderLivraisons()"></select>
+      <span id="livr_cpt" style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--gm);margin-left:auto"></span>
+    </div>
+    <div id="livr-zone"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+  </div>
+</div>
+</div>
+
+<!-- RECAP AGENT -->
+<div class="pv" id="view-recap">
+<div class="card">
+  <div class="ch"><div><div class="ct">Mon Récap</div><div class="cs">Objectifs · Progression · Paye estimée</div></div></div>
+  <div class="cb">
+    <div class="msel">
+      <label>Mois</label>
+      <select id="recap_mois" onchange="renderRecap()"></select>
+    </div>
+    <div id="recap-zone"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+  </div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="pv" id="view-dashboard">
+<div class="card">
+  <div class="ch"><div><div class="ct">Tableau de Bord Manager</div><div class="cs">Vue complète · Toutes agences</div></div></div>
+  <div class="cb">
+    <div class="msel">
+      <label>Mois</label>
+      <select id="dash_mois" onchange="renderDashboard()"></select>
+      <label style="margin-left:1rem">Vue</label>
+      <select id="dash_vue" onchange="renderDashboard()">
+        <option value="livraisons">Par livraison (paye réelle)</option>
+        <option value="ventes">Par vente signée</option>
+      </select>
+    </div>
+    <div class="kgrid" id="kpi-zone"></div>
+    <div class="stitle" style="margin-bottom:.8rem">Par agence</div>
+    <div class="agrid" id="agence-zone"></div>
+    <div class="stitle" style="margin-bottom:.8rem">Détail par agent</div>
+    <div class="atabs" id="agent-tabs"></div>
+    <div id="agent-zone"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+  </div>
+</div>
+</div>
+
+<!-- PARAMS -->
+<div class="pv" id="view-params">
+<div class="card">
+  <div class="ch"><div><div class="ct">Paramètres</div><div class="cs">Objectifs et pay plan · Modifier chaque début de mois</div></div></div>
+  <div class="cb">
+    <div class="acts"><button class="btn btn-s" onclick="saveParams()">✔ Enregistrer</button></div>
+    <div class="pgrid" id="param-zone"><div class="loading"><span class="spin"></span> Chargement...</div></div>
+    <div style="margin-top:1.5rem;background:var(--beige);border-left:3px solid var(--accent);padding:.8rem 1rem;font-size:.78rem;color:#5a5a5a">
+      <strong style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em">Grille primes palier marge livrée HT</strong><br><br>
+      ≥ 10 000 € → 100 € &nbsp;|&nbsp; ≥ 15 000 € → 250 € &nbsp;|&nbsp; ≥ 20 000 € → 400 € &nbsp;|&nbsp; ≥ 25 000 € → 650 €<br><br>
+      <strong style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em">Prime trimestrielle</strong><br><br>
+      Bénéfice trimestriel ≥ 50 000 € → 850 € HT &nbsp;|&nbsp; Plafond annuel : 2 500 € HT
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL MODIFICATION -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3>✏️ Modifier la vente</h3>
+    <div class="grid">
+      <div class="field"><label>Agent</label>
+        <select id="m_agent"><option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+      <div class="field"><label>Date vente</label><input type="date" id="m_date"></div>
+      <div class="field"><label>Client</label><input type="text" id="m_client"></div>
+      <div class="field"><label>Véhicule</label><input type="text" id="m_vehicule"></div>
+      <div class="field"><label>Type</label>
+        <select id="m_type">
+          <option value="classique">Vente classique</option>
+          <option value="stock">Stock société</option>
+          <option value="croise">Mandat croisé</option>
+        </select></div>
+      <div class="field"><label>Agent mandant</label>
+        <select id="m_mandant"><option value="">—</option><option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+      <div class="field"><label>Prix vente TTC</label><input type="number" id="m_pv" step="1"></div>
+      <div class="field"><label>Prix achat TTC</label><input type="number" id="m_pa" step="1"></div>
+      <div class="field"><label>Total frais HT</label><input type="number" id="m_frais" step="0.01"></div>
+      <div class="field"><label>Prime exceptionnelle</label><input type="number" id="m_prime" step="1" value="0"></div>
+    </div>
+    <input type="hidden" id="m_id">
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-s" onclick="saveModal()">✔ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+const SURL = 'https://srkcuapyyysmuisfbiki.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNya2N1YXB5eXlzbXVpc2ZiaWtpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ4Mjk1NSwiZXhwIjoyMDkxMDU4OTU1fQ.n3fkyTzXN7ZEy8pjN9w-Ybvv_kbAAOtxzY6B6ktAkW0';
+
+// API Supabase via fetch direct - fonctionne depuis fichier local
+const sb = {
+  from: (table) => ({
+    select: (cols='*', opts={}) => ({
+      eq: function(col, val) { this._filters = this._filters||[]; this._filters.push(`${col}=eq.${val}`); return this; },
+      order: function(col, opts={}) { this._order = `${col}.${opts.ascending?'asc':'desc'}`; return this; },
+      single: async function() { return sbQuery(table, this._filters, cols, this._order, 1, true); },
+      then: async function(cb) { const r = await sbQuery(table, this._filters, cols, this._order); cb&&cb(r); return r; },
+      [Symbol.asyncIterator]: async function*() { yield await sbQuery(table, this._filters, cols, this._order); }
+    }),
+    insert: async (data) => sbMutate(table, 'POST', data),
+    update: (data) => ({
+      eq: async (col, val) => sbMutate(table, 'PATCH', data, `${col}=eq.${val}`)
+    }),
+    delete: () => ({
+      eq: async (col, val) => sbMutate(table, 'DELETE', null, `${col}=eq.${val}`)
+    }),
+  })
+};
+
+async function sbQuery(table, filters=[], cols='*', order=null, limit=null, single=false) {
+  let url = `${SURL}/rest/v1/${table}?select=${cols}`;
+  if (filters) filters.forEach(f => url += `&${f}`);
+  if (order) url += `&order=${order}`;
+  if (limit) url += `&limit=${limit}`;
+  const res = await fetch(url, { headers: { apikey: SKEY, Authorization: 'Bearer '+SKEY, 'Content-Type': 'application/json' }});
+  const data = await res.json();
+  if (single) return { data: Array.isArray(data)?data[0]:data, error: res.ok?null:data };
+  return { data: Array.isArray(data)?data:[], error: res.ok?null:data };
+}
+
+async function sbMutate(table, method, body=null, filter=null) {
+  let url = `${SURL}/rest/v1/${table}`;
+  if (filter) url += `?${filter}`;
+  const opts = { method, headers: { apikey: SKEY, Authorization: 'Bearer '+SKEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }};
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const text = await res.text();
+  const err = !res.ok ? (text?JSON.parse(text):null) : null;
+  return { data: null, error: err };
+}
+
+const TVA = 1.20;
+const AGENTS = ['Jules', 'Léo', 'Aurélien'];
+const CODES = {julien:'1234', Jules:'1111', Leo:'2222', Aurelien:'3333'};
+const AGENT_DISPLAY = {julien:'Julien', Jules:'Jules', Leo:'Léo', Aurelien:'Aurélien'};
+
+let CU = null, ROLE = null, params = {}, currentAgentTab = 'Jules';
+
+// ── LOGIN
+function doLogin() {
+  const u = document.getElementById('lu').value;
+  const p = document.getElementById('lp').value.trim();
+  const lerr = document.getElementById('lerr');
+  if (!u) { lerr.textContent='Sélectionne un utilisateur'; lerr.style.display='block'; return; }
+  const expected = CODES[u];
+  if (p !== expected) { 
+    lerr.textContent='Code incorrect (reçu: "'+p+'", attendu: "'+expected+'")'; 
+    lerr.style.display='block'; 
+    return; 
+  }
+  CU = u; ROLE = u === 'julien' ? 'manager' : 'agent';
+  document.getElementById('ls').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('nrole').textContent = ROLE === 'manager' ? '👑 Manager' : '👤 ' + AGENT_DISPLAY[u];
+
+  if (ROLE === 'manager') {
+    document.getElementById('tab-dashboard').style.display = '';
+    document.getElementById('tab-params').style.display = '';
+  } else {
+    document.getElementById('tab-recap').style.display = '';
+    const agentName = AGENT_DISPLAY[CU];
+    document.getElementById('agent').value = agentName;
+  }
+  buildFraisTable();
+  show(ROLE === 'manager' ? 'dashboard' : 'recap');
+  loadParams().then(() => { updateLivrBadge(); });
+}
+
+// ── NAV
+function show(v) {
+  document.querySelectorAll('.pv').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(e => e.classList.remove('active'));
+  document.getElementById('view-' + v)?.classList.add('active');
+  const t = document.getElementById('tab-' + v); if (t) t.classList.add('active');
+  if (v === 'dashboard') renderDashboard();
+  if (v === 'params') renderParams();
+  if (v === 'livraisons') renderLivraisons();
+  if (v === 'recap') renderRecap();
+}
+
+// ── UTILS
+function gv(id) { const x = parseFloat(document.getElementById(id)?.value); return isNaN(x) ? 0 : x; }
+function isTva(id) { const e = document.getElementById(id); return e ? e.value === 'oui' : true; }
+function ht(t, tva) { return tva ? t / TVA : t; }
+function fmt(n) { if (n == null) return '—'; return parseFloat(n).toFixed(2).replace('.', ',') + ' €'; }
+function setC(id, v) { const e = document.getElementById(id); if (!e) return; e.textContent = fmt(v); e.classList.remove('neg','pos'); if (v < -0.005) e.classList.add('neg'); else if (v > 0.005) e.classList.add('pos'); }
+function getMois(d) { if (!d) return null; const dt = new Date(d); return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; }
+function moisLabel(k) { if (!k) return '—'; const [y,m] = k.split('-'); return ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][parseInt(m)-1] + ' ' + y; }
+function fd(s) { if (!s) return '—'; const [y,m,d] = s.split('-'); return `${d}/${m}/${y}`; }
+function palier(m) { return m>=25000?650:m>=20000?400:m>=15000?250:m>=10000?100:0; }
+function toast(msg, err) { const e = document.getElementById('toast'); e.textContent = msg; e.className = 'toast' + (err?' error':'') + ' show'; setTimeout(() => e.classList.remove('show'), 3500); }
+
+// ── FRAIS TABLE
+const FRAIS_DEF = [
+  {id:'garantie', label:'Garantie', tva:false, fixed:true},
+  {id:'f_entretien', label:'Frais entretien / réparation', tva:true},
+  {id:'f_ct', label:'Contrôle technique', tva:true},
+  {id:'f_revision', label:'Révision', tva:true},
+  {id:'f_cg_forfait', label:'Frais carte grise (forfait)', tva:false, fixed:true, default:40},
+  {id:'f_cg_taxe', label:'Carte grise (taxe régionale)', tva:false, fixed:true},
+  {id:'f_transport', label:'Frais de transport', tva:true},
+  {id:'f_nettoyage', label:'Frais de nettoyage', tva:true},
+  {id:'f_coffret', label:'Coffret cadeau', tva:true},
+  {id:'f_autres', label:'Autres frais', tva:true},
+];
+
+function buildFraisTable() {
+  const tbody = document.getElementById('frais-tbody');
+  tbody.innerHTML = FRAIS_DEF.map(f => `
+    <tr>
+      <td class="tdl">${f.label}${f.fixed ? ' <span class="tvab">Sans TVA</span>' : ''}</td>
+      <td>${f.fixed ? '<span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--rouge)">Non</span>' :
+        `<select class="tva-sel" id="tva_${f.id}" onchange="calc()"><option value="oui">Oui (20%)</option><option value="non">Non</option></select>`}</td>
+      <td><input class="ni" type="number" id="${f.id}" placeholder="0" step="${f.id==='f_cg_taxe'?'0.01':'1'}" value="${f.default||''}" oninput="calc()"></td>
+      <td class="cmp neg" id="${f.id}_ht">—</td>
+    </tr>`).join('');
+}
+
+// ── CALCUL FICHE
+document.getElementById('type_vente').addEventListener('change', function() {
+  document.getElementById('bloc_mandant').style.display = this.value === 'croise' ? '' : 'none'; calc();
+});
+
+function calc() {
+  const pv = gv('prix_vente'), pa = gv('prix_achat');
+  const mv_ttc = pv - pa, mv_ht = mv_ttc / TVA;
+  document.getElementById('marge_brute').value = (pv||pa) ? fmt(mv_ttc) + ' TTC  /  ' + fmt(mv_ht) + ' HT' : '';
+  let tf_ttc = 0, tf_ht = 0;
+  FRAIS_DEF.forEach(f => {
+    const tva = f.fixed ? false : isTva('tva_' + f.id);
+    const t = gv(f.id), h = ht(t, tva);
+    setC(f.id + '_ht', -h); tf_ttc += t; tf_ht += h;
+  });
+  setC('rf_ttc', -tf_ttc); setC('rf_ht', -tf_ht);
+  setC('rv_ttc', mv_ttc); setC('rv_ht', mv_ht);
+  const mn_ttc = mv_ttc - tf_ttc, mn_ht = mv_ht - tf_ht;
+  setC('mn_ttc', mn_ttc); setC('mn_ht', mn_ht); setC('comm_base', mn_ht);
+  const type = document.getElementById('type_vente').value;
+  const agent = document.getElementById('agent').value || 'Agent';
+  const mandant = document.getElementById('agent_mandant').value || 'Agent mandant';
+  let cv = 0, cm = 0;
+  if (type === 'classique') { cv = mn_ht*0.40; document.getElementById('comm_info').textContent = '📋 Vente classique — '+agent+' perçoit 40% de la marge nette HT'; document.getElementById('row_croise').style.display='none'; document.getElementById('comm_lv').textContent='Commission '+agent+' (40%)'; }
+  else if (type === 'stock') { cv = mn_ht*0.20; document.getElementById('comm_info').textContent = '🏢 Stock société — '+agent+' perçoit 20%'; document.getElementById('row_croise').style.display='none'; document.getElementById('comm_lv').textContent='Commission '+agent+' (20%)'; }
+  else { cv=mn_ht*0.20; cm=mn_ht*0.20; document.getElementById('comm_info').textContent='🤝 Mandat croisé — '+agent+' vend · '+mandant+' a rentré le mandat'; document.getElementById('row_croise').style.display=''; document.getElementById('comm_lv').textContent='Commission '+agent+' (vendeur 20%)'; document.getElementById('croise_box').innerHTML='💼 '+agent+' (vendeur) → <strong>'+fmt(cv)+'</strong><br>📋 '+mandant+' (mandant) → <strong>'+fmt(cm)+'</strong>'; }
+  setC('comm_v', cv);
+  setC('total_agent', cv + gv('prime_excep'));
+  document.getElementById('total_lbl').textContent = type==='croise' ? 'Total à verser à '+agent+' (vendeur)' : 'Total à verser à '+agent;
+}
+
+// ── ENREGISTRER VENTE
+async function enregistrerVente() {
+  const agent = document.getElementById('agent').value;
+  const date_str = document.getElementById('date_vente').value;
+  const vehicule = document.getElementById('vehicule').value;
+  const agence = document.getElementById('agence').value;
+  if (!agent) return toast('Sélectionne un agent', true);
+  if (!date_str) return toast('Indique la date de la vente', true);
+  if (!vehicule) return toast('Indique le véhicule', true);
+  if (!agence) return toast('Sélectionne une agence', true);
+  const pv = gv('prix_vente'), pa = gv('prix_achat');
+  if (!pv && !pa) return toast('Saisis prix vente et achat', true);
+  const mv_ht = (pv-pa)/TVA;
+  let tf_ht = 0;
+  FRAIS_DEF.forEach(f => { const tva = f.fixed ? false : isTva('tva_'+f.id); tf_ht += ht(gv(f.id), tva); });
+  const mn_ht = mv_ht - tf_ht;
+  const type = document.getElementById('type_vente').value;
+  const mandant = document.getElementById('agent_mandant').value || null;
+  let cv = 0, cm = 0;
+  if (type==='classique') cv=mn_ht*0.40; else if (type==='stock') cv=mn_ht*0.20; else {cv=mn_ht*0.20;cm=mn_ht*0.20;}
+  const btn = document.getElementById('btn-enreg');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  const {error} = await sb.from('ventes').insert({
+    date_vente:date_str, mois_vente:getMois(date_str), agence, agent,
+    client:document.getElementById('client').value, vehicule,
+    type_vente:type, agent_mandant:mandant,
+    prix_vente:pv, prix_achat:pa, marge_veh_ht:mv_ht, total_frais_ht:tf_ht, marge_nette_ht:mn_ht,
+    comm_vendeur:cv, comm_mandant:cm, prime_excep:gv('prime_excep'),
+    livraison_statut:'En attente', avis_google:'attente',
+  });
+  btn.disabled=false; btn.innerHTML='✔ Enregistrer la vente';
+  if (error) return toast('Erreur : '+error.message, true);
+  toast('✔ Vente enregistrée — '+vehicule);
+  updateLivrBadge(); resetForm(true);
+}
+
+function resetForm(silent) {
+  if (!silent && !confirm('Réinitialiser ?')) return;
+  ['agence','agent_mandant'].forEach(id => document.getElementById(id).value='');
+  if (ROLE!=='agent') document.getElementById('agent').value='';
+  else document.getElementById('agent').value = AGENT_DISPLAY[CU];
+  document.getElementById('type_vente').value='classique';
+  document.getElementById('bloc_mandant').style.display='none';
+  document.querySelectorAll('#view-fiche input[type=text],#view-fiche input[type=number],#view-fiche input[type=date]').forEach(el => {
+    if (el.readOnly){el.value='';return;} if(el.id==='f_cg_forfait'){el.value=40;return;} el.value='';
+  });
+  document.querySelectorAll('.tva-sel').forEach(s=>s.value='oui');
+  ['rv_ttc','rv_ht','rf_ttc','rf_ht','mn_ttc','mn_ht','comm_base','comm_v','total_agent'].forEach(id=>{const e=document.getElementById(id);if(e){e.textContent='—';e.className='cmp';}});
+  FRAIS_DEF.forEach(f=>{const e=document.getElementById(f.id+'_ht');if(e){e.textContent='—';e.className='cmp neg';}});
+  document.getElementById('marge_brute').value='';
+  document.getElementById('comm_info').textContent='—';
+  document.getElementById('row_croise').style.display='none';
+  calc();
+}
+
+// ── BADGE LIVRAISONS
+async function updateLivrBadge() {
+  let q = sb.from('ventes').select('id',{count:'exact',head:true}).eq('livraison_statut','En attente');
+  if (ROLE==='agent') q=q.eq('agent',AGENT_DISPLAY[CU]);
+  const {count} = await q;
+  const b = document.getElementById('livr-badge');
+  b.textContent=count||0; b.style.display=count>0?'':'none';
+}
+
+// ── MOIS SELECT HELPER
+async function fillMoisSelect(selId) {
+  const {data} = await sb.from('ventes').select('mois_vente,mois_livraison');
+  const allMois = [...new Set([...(data||[]).map(v=>v.mois_vente),...(data||[]).map(v=>v.mois_livraison)].filter(Boolean))].sort().reverse();
+  const cur = getMois(new Date().toISOString().slice(0,10));
+  if (!allMois.includes(cur)) allMois.push(cur);
+  const sel = document.getElementById(selId);
+  const prev = sel.value;
+  sel.innerHTML='';
+  allMois.forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=moisLabel(m);if(m===(prev||allMois[0]))o.selected=true;sel.appendChild(o);});
+}
+
+// ── LIVRAISONS
+async function renderLivraisons() {
+  const zone = document.getElementById('livr-zone');
+  zone.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  await fillMoisSelect('livr_mois');
+  const moisSel = document.getElementById('livr_mois').value;
+  let q = sb.from('ventes').select('*').order('date_vente',{ascending:false});
+  if (ROLE==='agent') q=q.eq('agent',AGENT_DISPLAY[CU]);
+  const {data:all} = await q;
+  const enAttente = (all||[]).filter(v=>v.livraison_statut==='En attente');
+  const livres = (all||[]).filter(v=>v.livraison_statut==='Livré'&&v.mois_livraison===moisSel);
+  const toShow = [...enAttente,...livres].sort((a,b)=>a.livraison_statut==='En attente'&&b.livraison_statut!=='En attente'?-1:b.livraison_statut==='En attente'&&a.livraison_statut!=='En attente'?1:0);
+  document.getElementById('livr_cpt').textContent=enAttente.length+' en attente · '+livres.length+' livré(s) ce mois';
+  if (!toShow.length){zone.innerHTML='<div style="text-align:center;padding:2rem;color:var(--gm);font-family:'IBM Plex Mono',monospace;font-size:.78rem">Aucune livraison.</div>';return;}
+  zone.innerHTML=toShow.map(v=>{
+    const done=v.livraison_statut==='Livré';
+    const avis=v.avis_google||'attente';
+    const av_col=avis==='oui'?'var(--vert)':avis==='non'?'var(--rouge)':'#b45309';
+    const av_lbl=avis==='oui'?'✅ Avis reçu (+30 €)':avis==='non'?'❌ Pas d'avis':'⏳ En attente';
+    const ck_html=!done?`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-top:.5rem">
+        ${['cg:🪪 Carte grise','histovec:📋 Histovec','revision:🔧 Révision < 6 mois','garantie:🛡️ Garantie saisie'].map(s=>{const[k,l]=s.split(':');return`<label style="display:flex;align-items:center;gap:.35rem;font-size:.73rem;cursor:pointer;background:var(--beige);padding:.3rem .5rem;border:1px solid var(--border)"><input type="checkbox" id="ck_${v.id}_${k}" style="accent-color:var(--vert);width:13px;height:13px;border-bottom:none"> ${l}</label>`;}).join('')}
+      </div>
+      <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px solid var(--border)">
+        <div style="font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.3rem">Avis Google reçu ?</div>
+        <div style="display:flex;gap:1rem">
+          <label style="display:flex;align-items:center;gap:.3rem;font-size:.78rem;cursor:pointer"><input type="radio" name="avis_${v.id}" value="oui" style="border-bottom:none;accent-color:var(--vert)"> Oui (+30 €)</label>
+          <label style="display:flex;align-items:center;gap:.3rem;font-size:.78rem;cursor:pointer"><input type="radio" name="avis_${v.id}" value="non" style="border-bottom:none;accent-color:var(--rouge)"> Non</label>
+          <label style="display:flex;align-items:center;gap:.3rem;font-size:.78rem;cursor:pointer"><input type="radio" name="avis_${v.id}" value="attente" checked style="border-bottom:none;accent-color:#b45309"> En attente</label>
+        </div>
+      </div>`:
+      `<div style="margin-top:.4rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:${av_col}">${av_lbl}
+        ${avis==='attente'?`<div style="display:flex;gap:.4rem;margin-top:.3rem"><button class="btn btn-s" style="padding:.2rem .5rem;font-size:.55rem" onclick="basculerAvis(${v.id},'oui')">✅ Reçu</button><button class="btn btn-d" style="padding:.2rem .5rem;font-size:.55rem" onclick="basculerAvis(${v.id},'non')">❌ Pas d'avis</button></div>`:
+        `<button class="btn" style="padding:.15rem .4rem;font-size:.52rem;margin-left:.4rem" onclick="basculerAvis(${v.id},'attente')">Modifier</button>`}
+      </div>`;
+    return`<div class="lcard ${done?'done':''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:.9rem;margin-bottom:.25rem">${v.vehicule||'—'} <span class="tag ${done?'tl':'ta'}">${done?'Livré':'En attente'}</span></div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--gm)">${v.agent} · ${v.client||'—'} · ${v.agence}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--gm)">Vente le ${fd(v.date_vente)}${v.date_livraison?' · Livré le '+fd(v.date_livraison):''}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:.9rem;font-weight:600;color:var(--vert);margin:.35rem 0">${fmt(v.marge_nette_ht)}</div>
+          <div style="background:var(--beige);border:1px solid var(--border);padding:.55rem .75rem">
+            <div style="font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.25rem">Checklist & Avis</div>
+            ${ck_html}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.45rem;min-width:165px">
+          ${!done?`
+            <input type="date" class="ldi" id="ld_${v.id}" value="${new Date().toISOString().slice(0,10)}">
+            <button class="btn btn-s" style="width:100%" onclick="marquerLivre(${v.id})">✔ Valider livraison</button>
+          `:`
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--vert);text-align:right">✅ Livré le<br>${fd(v.date_livraison)}</span>
+            <button class="btn btn-d" style="font-size:.55rem" onclick="annulerLivraison(${v.id})">Annuler</button>
+          `}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function marquerLivre(id) {
+  const dl = document.getElementById('ld_'+id)?.value;
+  if (!dl) return toast('Sélectionne une date', true);
+  const ck_ids=['cg','histovec','revision','garantie'];
+  const lbls={cg:'Carte grise',histovec:'Histovec',revision:'Révision',garantie:'Garantie'};
+  const manq=ck_ids.filter(k=>!document.getElementById('ck_'+id+'_'+k)?.checked);
+  if (manq.length) return toast('⚠️ Checklist incomplète : '+manq.map(k=>lbls[k]).join(', '), true);
+  const avis=document.querySelector(`input[name="avis_${id}"]:checked`);
+  if (!avis) return toast('Indique le statut de l'avis Google', true);
+  const {error} = await sb.from('ventes').update({
+    livraison_statut:'Livré', date_livraison:dl, mois_livraison:getMois(dl),
+    avis_google:avis.value,
+    checklist_cg:true, checklist_histovec:true, checklist_revision:true, checklist_garantie:true,
+  }).eq('id',id);
+  if (error) return toast('Erreur', true);
+  toast('🚗 Livraison validée !'); updateLivrBadge(); renderLivraisons();
+}
+
+async function annulerLivraison(id) {
+  if (!confirm('Annuler la livraison ?')) return;
+  await sb.from('ventes').update({livraison_statut:'En attente',date_livraison:null,mois_livraison:null}).eq('id',id);
+  updateLivrBadge(); renderLivraisons(); toast('Livraison annulée');
+}
+
+async function basculerAvis(id, val) {
+  await sb.from('ventes').update({avis_google:val}).eq('id',id);
+  toast(val==='oui'?'✅ Prime avis Google ajoutée':'Avis mis à jour');
+  renderLivraisons(); if(ROLE==='manager')renderDashboard();
+}
+
+// ── RECAP AGENT
+async function renderRecap() {
+  if (ROLE!=='agent') return;
+  const zone=document.getElementById('recap-zone');
+  zone.innerHTML='<div class="loading"><span class="spin"></span> Chargement...</div>';
+  await fillMoisSelect('recap_mois');
+  const mois=document.getElementById('recap_mois').value;
+  const agentName=AGENT_DISPLAY[CU];
+  const p=params[agentName]||{};
+  const {data:vm}=await sb.from('ventes').select('*').eq('agent',agentName).eq('mois_livraison',mois);
+  const {data:vs}=await sb.from('ventes').select('*').eq('agent',agentName).eq('mois_vente',mois);
+  const {data:mandats}=await sb.from('ventes').select('*').eq('agent_mandant',agentName).eq('mois_livraison',mois);
+  const {data:attente}=await sb.from('ventes').select('*').eq('agent',agentName).eq('livraison_statut','En attente');
+  const vl=vm||[], vv=vs||[], vm2=mandats||[], att=attente||[];
+  const nb_livr=vl.length, nb_vente=vv.length, nb_mandat_rentres=parseInt(p.obj_mandats_rentres||0);
+  const obj_v=p.obj_ventes||0, obj_m=p.obj_mandats||0;
+  const marge=vl.reduce((s,v)=>s+parseFloat(v.marge_nette_ht||0),0);
+  const comm=vl.reduce((s,v)=>s+parseFloat(v.comm_vendeur||0),0);
+  const comm_m=vm2.reduce((s,v)=>s+parseFloat(v.comm_mandant||0),0);
+  const avis=vl.reduce((s,v)=>s+(v.avis_google==='oui'?30:0),0);
+  const excep=vl.reduce((s,v)=>s+parseFloat(v.prime_excep||0),0);
+  const avis_att=vl.filter(v=>!v.avis_google||v.avis_google==='attente').length;
+  const prime_pal=palier(marge);
+  const prime_ov=nb_livr>=obj_v?(p.prime_obj_ventes||250):0;
+  const prime_om=nb_livr>=obj_v?(p.prime_obj_mandats||150):0;
+  const bonus=nb_livr>obj_v?((nb_livr-obj_v)*(p.bonus_depassement||100)):0;
+  const total=comm+comm_m+avis+excep+prime_pal+prime_ov+prime_om+bonus;
+  const pct_v=obj_v?Math.min(100,Math.round(nb_livr/obj_v*100)):0;
+  const pct_m=obj_m?Math.min(100,Math.round(vv.length/obj_m*100)):0;
+  const pct_marge=Math.min(100,Math.round(marge/25000*100));
+
+  const objCards = [
+    {icon:'🚗', label:'Livraisons ce mois', cur:nb_livr, tot:obj_v, pct:pct_v, color:'vert', detail:`${att.length} en attente de livraison`},
+    {icon:'📋', label:'Ventes signées', cur:nb_vente, tot:obj_m, pct:pct_m, color:'bleu', detail:`Objectif mandats : ${obj_m}`},
+    {icon:'💶', label:'Marge nette HT', cur:marge, tot:25000, pct:pct_marge, color:'accent', detail:`Palier suivant : ${palier(marge+1)} €`, isMoney:true},
+  ];
+
+  const objHTML = objCards.map(o => {
+    const pct_class = o.pct>=100?'green':o.pct>=50?'amber':'blue';
+    const done = o.pct>=100;
+    return `<div class="obj-card ${done?'done':o.pct>=70?'warn':''}" style="--p:${o.pct}%">
+      <div class="obj-icon">${o.icon}</div>
+      <div class="obj-label">${o.label}</div>
+      <div class="obj-nums">
+        <span class="obj-cur">${o.isMoney?fmt(o.cur).replace(' €',''):o.cur}</span>
+        <span class="obj-sep">/</span>
+        <span class="obj-tot">${o.isMoney?fmt(o.tot).replace(' €',''):o.tot}${o.isMoney?' €':''}</span>
+      </div>
+      <span class="obj-pct ${pct_class}">${o.pct}%</span>
+      <div style="height:8px;background:var(--gc);border-radius:4px;overflow:hidden;margin:.4rem 0">
+        <div style="height:100%;width:${o.pct}%;background:${done?'linear-gradient(90deg,#1e5a3a,var(--vert))':'linear-gradient(90deg,var(--ad),var(--accent))'};border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)"></div>
+      </div>
+      <div class="obj-status">${done?'✅ Objectif atteint !':'⏳ '+o.detail}</div>
+    </div>`;
+  }).join('');
+
+  const payHTML = `
+    <div class="pay-box">
+      <div class="pr"><span style="color:var(--gm)">Commission vendeur</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(comm)}</span></div>
+      ${comm_m>0?`<div class="pr"><span style="color:var(--gm)">Commission mandant croisé</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--ad)">${fmt(comm_m)}</span></div>`:''}
+      <div class="pr"><span style="color:var(--gm)">Primes avis Google${avis_att>0?` <span style="color:#b45309;font-size:.65rem">(${avis_att} en attente)</span>`:''}</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(avis)}</span></div>
+      <div class="pr"><span style="color:var(--gm)">Primes exceptionnelles</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(excep)}</span></div>
+      <div class="pr"><span style="color:var(--gm)">Prime palier marge</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_pal>0?'var(--vert)':'var(--gm)'}">${prime_pal>0?fmt(prime_pal):'—'}</span></div>
+      <div class="pr"><span style="color:var(--gm)">Prime objectif livraisons ${nb_livr>=obj_v?'✅':'⏳ (obj. '+obj_v+')'}</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_ov>0?'var(--vert)':'var(--gm)'}">${prime_ov>0?fmt(prime_ov):'—'}</span></div>
+      <div class="pr"><span style="color:var(--gm)">Prime objectif mandats ${nb_livr>=obj_v?'✅':'⏳'}</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_om>0?'var(--vert)':'var(--gm)'}">${prime_om>0?fmt(prime_om):'—'}</span></div>
+      <div class="pr"><span style="color:var(--gm)">Bonus dépassement ${nb_livr>obj_v?'(+'+(nb_livr-obj_v)+'×'+fmt(p.bonus_depassement||100)+')':''}</span><span style="font-family:'IBM Plex Mono',monospace;color:${bonus>0?'var(--vert)':'var(--gm)'}">${bonus>0?fmt(bonus):'—'}</span></div>
+    </div>
+    <div class="total-verser"><span>💰 Total estimé à percevoir ce mois</span><span>${fmt(total)}</span></div>`;
+
+  const ventesHTML = vv.length===0?'<div style="text-align:center;padding:1.5rem;color:var(--gm);font-family:'IBM Plex Mono',monospace;font-size:.78rem">Aucune vente saisie ce mois.</div>':
+    `<table class="vt"><thead><tr><th>Date vente</th><th>Véhicule</th><th>Type</th><th style="text-align:right">Marge HT</th><th style="text-align:right">Livraison</th></tr></thead>
+    <tbody>${vv.map(v=>`<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:.72rem">${fd(v.date_vente)}</td>
+      <td><div style="font-size:.78rem;font-weight:500">${v.vehicule||'—'}</div><div style="font-size:.68rem;color:var(--gm)">${v.client||''}</div></td>
+      <td><span class="tag ${v.type_vente==='classique'?'tc':v.type_vente==='stock'?'ts':'tcr'}">${v.type_vente==='classique'?'Classique':v.type_vente==='stock'?'Stock':'Croisé'}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--vert)">${fmt(v.marge_nette_ht)}</td>
+      <td style="text-align:right"><span class="tag ${v.livraison_statut==='Livré'?'tl':'ta'}">${v.livraison_statut==='Livré'?'Livré '+fd(v.date_livraison):'En attente'}</span></td>
+    </tr>`).join('')}</tbody></table>`;
+
+  zone.innerHTML=`
+    <div class="obj-grid">${objHTML}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
+      <div><div class="stitle" style="margin-bottom:.7rem">Ma paye estimée — ${moisLabel(mois)}</div>${payHTML}</div>
+      <div>
+        <div class="stitle" style="margin-bottom:.7rem">Mes ventes signées ce mois (${nb_vente})</div>
+        ${ventesHTML}
+        ${att.length>0?`<div style="background:#fff3e0;border:1px solid #f9c74f;padding:.6rem .8rem;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:#b45309">⏳ ${att.length} véhicule(s) en attente de livraison — voir onglet Livraisons</div>`:''}
+      </div>
+    </div>`;
+}
+
+// ── DASHBOARD MANAGER
+async function renderDashboard() {
+  if (ROLE!=='manager') return;
+  await fillMoisSelect('dash_mois');
+  const mois=document.getElementById('dash_mois').value;
+  const vue=document.getElementById('dash_vue').value;
+  const moisField=vue==='livraisons'?'mois_livraison':'mois_vente';
+  const {data:vm}=await sb.from('ventes').select('*').eq(moisField,mois);
+  const data=vm||[];
+  const totalMarge=data.reduce((s,v)=>s+parseFloat(v.marge_nette_ht||0),0);
+  const totalComm=data.reduce((s,v)=>s+parseFloat(v.comm_vendeur||0)+parseFloat(v.comm_mandant||0),0);
+  const nbV=data.length, nbL=data.filter(v=>v.livraison_statut==='Livré').length;
+  const nbAtt=data.filter(v=>v.livraison_statut==='En attente').length;
+  const avisAtt=data.filter(v=>v.avis_google==='attente'&&v.livraison_statut==='Livré').length;
+  document.getElementById('kpi-zone').innerHTML=`
+    <div class="kpi hl"><div class="kl">Marge nette HT (${vue==='livraisons'?'livrée':'signée'})</div><div class="kv">${fmt(totalMarge)}</div><div class="ks">${nbV} opération(s)</div></div>
+    <div class="kpi ok"><div class="kl">Commissions à verser</div><div class="kv">${fmt(totalComm)}</div><div class="ks">Tous agents</div></div>
+    <div class="kpi info"><div class="kl">Livraisons</div><div class="kv">${nbL} / ${nbV}</div><div class="ks">${nbAtt} en attente</div></div>
+    <div class="kpi warn"><div class="kl">Avis Google en attente</div><div class="kv">${avisAtt}</div><div class="ks">À confirmer pour la paye</div></div>`;
+  const agences=['Agence Saint-Rémy-de-Provence','Agence Aix-en-Provence'];
+  document.getElementById('agence-zone').innerHTML=agences.map(ag=>{
+    const va=data.filter(v=>v.agence===ag);
+    const m=va.reduce((s,v)=>s+parseFloat(v.marge_nette_ht||0),0);
+    const c=va.reduce((s,v)=>s+parseFloat(v.comm_vendeur||0),0);
+    const l=va.filter(v=>v.livraison_statut==='Livré').length;
+    return`<div class="acard"><h4>${ag}</h4>
+      <div class="arow"><span>Opérations</span><span style="font-family:'IBM Plex Mono',monospace">${va.length}</span></div>
+      <div class="arow"><span>Livraisons</span><span style="font-family:'IBM Plex Mono',monospace">${l}</span></div>
+      <div class="arow"><span>Marge nette HT</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--vert)">${fmt(m)}</span></div>
+      <div class="arow"><span>Commissions HT</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(c)}</span></div>
+    </div>`;
+  }).join('');
+  const tabs=document.getElementById('agent-tabs');
+  tabs.innerHTML='';
+  AGENTS.forEach(a=>{
+    const nb=data.filter(v=>v.agent===a).length;
+    const btn=document.createElement('button');
+    btn.className='atab'+(a===currentAgentTab?' active':'');
+    btn.innerHTML=a+(nb?` <span style="background:var(--accent);color:var(--noir);font-size:.52rem;padding:.1rem .3rem;margin-left:.2rem">${nb}</span>`:'');
+    btn.onclick=()=>{currentAgentTab=a;document.querySelectorAll('.atab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderAgentManager(data,a,mois);};
+    tabs.appendChild(btn);
+  });
+  renderAgentManager(data,currentAgentTab,mois);
+}
+
+async function renderAgentManager(data, agent, mois) {
+  const zone=document.getElementById('agent-zone');
+  zone.innerHTML='<div class="loading"><span class="spin"></span></div>';
+  const p=params[agent]||{};
+  const ventes=data.filter(v=>v.agent===agent);
+  const mandats=data.filter(v=>v.type_vente==='croise'&&v.agent_mandant===agent);
+  const marge=ventes.reduce((s,v)=>s+parseFloat(v.marge_nette_ht||0),0);
+  const comm=ventes.reduce((s,v)=>s+parseFloat(v.comm_vendeur||0),0);
+  const comm_m=mandats.reduce((s,v)=>s+parseFloat(v.comm_mandant||0),0);
+  const avis=ventes.reduce((s,v)=>s+(v.avis_google==='oui'?30:0),0);
+  const excep=ventes.reduce((s,v)=>s+parseFloat(v.prime_excep||0),0);
+  const avis_att=ventes.filter(v=>v.livraison_statut==='Livré'&&(!v.avis_google||v.avis_google==='attente')).length;
+  const nb_v=ventes.length, nb_l=ventes.filter(v=>v.livraison_statut==='Livré').length;
+  const obj_v=p.obj_ventes||0;
+  const prime_pal=palier(marge);
+  const prime_ov=nb_v>=obj_v?(p.prime_obj_ventes||250):0;
+  const prime_om=nb_v>=obj_v?(p.prime_obj_mandats||150):0;
+  const bonus=nb_v>obj_v?((nb_v-obj_v)*(p.bonus_depassement||100)):0;
+  const total=comm+comm_m+avis+excep+prime_pal+prime_ov+prime_om+bonus;
+  const pct_v=obj_v?Math.min(100,Math.round(nb_v/obj_v*100)):0;
+  const pct_marge=Math.min(100,Math.round(marge/25000*100));
+
+  const ventesHTML=ventes.length===0?'<div style="text-align:center;padding:1.5rem;color:var(--gm);font-family:'IBM Plex Mono',monospace;font-size:.78rem">Aucune vente ce mois.</div>':
+    `<table class="vt"><thead><tr><th>Date</th><th>Véhicule / Client</th><th>Type</th><th style="text-align:right">Marge HT</th><th style="text-align:right">Commission</th><th style="text-align:right">Livraison</th><th></th><th></th></tr></thead>
+    <tbody>${ventes.map(v=>`<tr>
+      <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;white-space:nowrap">${fd(v.date_vente)}</td>
+      <td><div style="font-size:.77rem;font-weight:500">${v.vehicule||'—'}</div><div style="font-size:.67rem;color:var(--gm)">${v.client||''}</div></td>
+      <td><span class="tag ${v.type_vente==='classique'?'tc':v.type_vente==='stock'?'ts':'tcr'}">${v.type_vente==='classique'?'Classique':v.type_vente==='stock'?'Stock':'Croisé'}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;text-align:right;color:${parseFloat(v.marge_nette_ht||0)>=0?'var(--vert)':'var(--rouge)'}">${fmt(v.marge_nette_ht)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;text-align:right">${fmt(v.comm_vendeur)}</td>
+      <td style="text-align:right"><span class="tag ${v.livraison_statut==='Livré'?'tl':'ta'}">${v.livraison_statut==='Livré'?'Livré':'En attente'}</span></td>
+      <td><button class="editbtn" onclick="openModal(${v.id})">✏️ Modifier</button></td>
+      <td><button class="delbtn" onclick="supprimerVente(${v.id})" title="Supprimer">✕</button></td>
+    </tr>`).join('')}</tbody></table>`;
+
+  zone.innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
+    <div>
+      <div class="stitle" style="margin-bottom:.7rem">Progression</div>
+      <div style="background:var(--blanc);border:1px solid var(--border);padding:.9rem 1rem;margin-bottom:.7rem;box-shadow:0 2px 6px rgba(0,0,0,.05)">
+        <div style="font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.3rem">Ventes / Livraisons ce mois</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;color:${nb_v>=obj_v?'var(--vert)':'var(--noir)'}">${nb_v}<span style="font-size:.8rem;color:var(--gm)"> / ${obj_v} obj.</span> · <span style="font-size:.85rem;color:var(--vert)">${nb_l} livré(s)</span></div>
+        <div style="height:8px;background:var(--gc);border-radius:4px;overflow:hidden;margin:.4rem 0"><div style="height:100%;width:${pct_v}%;background:${nb_v>=obj_v?'linear-gradient(90deg,#1e5a3a,var(--vert))':'linear-gradient(90deg,var(--ad),var(--accent))'};border-radius:4px;transition:width .8s"></div></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--gm)">${pct_v}% — ${nb_v>=obj_v?'✅ Objectif atteint':'⏳ '+(obj_v-nb_v)+' manquante(s)'}</div>
+      </div>
+      <div style="background:var(--blanc);border:1px solid var(--border);padding:.9rem 1rem;box-shadow:0 2px 6px rgba(0,0,0,.05)">
+        <div style="font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.3rem">Marge nette HT générée</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--ad)">${fmt(marge)}</div>
+        <div style="height:8px;background:var(--gc);border-radius:4px;overflow:hidden;margin:.4rem 0"><div style="height:100%;width:${pct_marge}%;background:linear-gradient(90deg,var(--ad),var(--accent));border-radius:4px;transition:width .8s"></div></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--gm)">${pct_marge}% vers 25 000 € · Prime palier : ${fmt(prime_pal)}${avis_att>0?' · <span style="color:#b45309">'+avis_att+' avis en attente</span>':''}</div>
+      </div>
+    </div>
+    <div>
+      <div class="stitle" style="margin-bottom:.7rem">Récap paye</div>
+      <div class="pay-box">
+        <div class="pr"><span style="color:var(--gm)">Commission vendeur</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(comm)}</span></div>
+        ${comm_m>0?`<div class="pr"><span style="color:var(--gm)">Commission mandant</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--ad)">${fmt(comm_m)}</span></div>`:''}
+        <div class="pr"><span style="color:var(--gm)">Primes avis Google${avis_att>0?` <span style="color:#b45309;font-size:.63rem">(${avis_att} en attente)</span>`:''}</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(avis)}</span></div>
+        <div class="pr"><span style="color:var(--gm)">Primes exceptionnelles</span><span style="font-family:'IBM Plex Mono',monospace">${fmt(excep)}</span></div>
+        <div class="pr"><span style="color:var(--gm)">Prime palier marge</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_pal>0?'var(--vert)':'var(--gm)'}">${prime_pal>0?fmt(prime_pal):'—'}</span></div>
+        <div class="pr"><span style="color:var(--gm)">Prime obj. ventes ${nb_v>=obj_v?'✅':'⏳'}</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_ov>0?'var(--vert)':'var(--gm)'}">${prime_ov>0?fmt(prime_ov):'—'}</span></div>
+        <div class="pr"><span style="color:var(--gm)">Prime obj. mandats ${nb_v>=obj_v?'✅':'⏳'}</span><span style="font-family:'IBM Plex Mono',monospace;color:${prime_om>0?'var(--vert)':'var(--gm)'}">${prime_om>0?fmt(prime_om):'—'}</span></div>
+        <div class="pr"><span style="color:var(--gm)">Bonus dépassement ${nb_v>obj_v?'(+'+(nb_v-obj_v)+')':''}</span><span style="font-family:'IBM Plex Mono',monospace;color:${bonus>0?'var(--vert)':'var(--gm)'}">${bonus>0?fmt(bonus):'—'}</span></div>
+      </div>
+      <div class="total-verser"><span>💰 TOTAL À VERSER</span><span>${fmt(total)}</span></div>
+    </div>
+  </div>
+  <div class="stitle">Ventes du mois — ${agent} (${ventes.length})</div>
+  ${ventesHTML}
+  ${mandats.length>0?`
+  <div class="stitle" style="margin-top:1.2rem">Mandats rentrés par ${agent} (${mandats.length})</div>
+  <table class="vt"><thead><tr><th>Date</th><th>Véhicule</th><th>Vendeur</th><th style="text-align:right">Marge HT</th><th style="text-align:right">Commission mandant</th></tr></thead>
+  <tbody>${mandats.map(v=>`<tr>
+    <td style="font-family:'IBM Plex Mono',monospace;font-size:.7rem">${fd(v.date_vente)}</td>
+    <td style="font-size:.77rem">${v.vehicule||'—'}</td>
+    <td style="font-size:.75rem">${v.agent}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--vert)">${fmt(v.marge_nette_ht)}</td>
+    <td style="font-family:'IBM Plex Mono',monospace;font-weight:600;text-align:right;color:var(--ad)">${fmt(v.comm_mandant)}</td>
+  </tr>`).join('')}</tbody></table>`:''}`;
+}
+
+async function supprimerVente(id) {
+  if (ROLE!=='manager') return toast('Action réservée au manager', true);
+  if (!confirm('Supprimer cette vente ?')) return;
+  await sb.from('ventes').delete().eq('id',id);
+  toast('Vente supprimée'); updateLivrBadge(); renderDashboard();
+}
+
+// ── MODAL MODIFICATION (manager seulement)
+let editId = null;
+async function openModal(id) {
+  if (ROLE!=='manager') return toast('Action réservée au manager', true);
+  const {data} = await sb.from('ventes').select('*').eq('id',id).single();
+  if (!data) return;
+  editId = id;
+  document.getElementById('m_agent').value = data.agent||'';
+  document.getElementById('m_date').value = data.date_vente||'';
+  document.getElementById('m_client').value = data.client||'';
+  document.getElementById('m_vehicule').value = data.vehicule||'';
+  document.getElementById('m_type').value = data.type_vente||'classique';
+  document.getElementById('m_mandant').value = data.agent_mandant||'';
+  document.getElementById('m_pv').value = data.prix_vente||0;
+  document.getElementById('m_pa').value = data.prix_achat||0;
+  document.getElementById('m_frais').value = data.total_frais_ht||0;
+  document.getElementById('m_prime').value = data.prime_excep||0;
+  document.getElementById('modal-bg').classList.add('show');
+}
+
+function closeModal() { document.getElementById('modal-bg').classList.remove('show'); editId=null; }
+
+async function saveModal() {
+  if (!editId) return;
+  const pv=parseFloat(document.getElementById('m_pv').value)||0;
+  const pa=parseFloat(document.getElementById('m_pa').value)||0;
+  const frais=parseFloat(document.getElementById('m_frais').value)||0;
+  const mv_ht=(pv-pa)/TVA;
+  const mn_ht=mv_ht-frais;
+  const type=document.getElementById('m_type').value;
+  const agent=document.getElementById('m_agent').value;
+  const mandant=document.getElementById('m_mandant').value||null;
+  let cv=0,cm=0;
+  if(type==='classique')cv=mn_ht*0.40; else if(type==='stock')cv=mn_ht*0.20; else{cv=mn_ht*0.20;cm=mn_ht*0.20;}
+  const date_str=document.getElementById('m_date').value;
+  const {error}=await sb.from('ventes').update({
+    agent, date_vente:date_str, mois_vente:getMois(date_str),
+    client:document.getElementById('m_client').value,
+    vehicule:document.getElementById('m_vehicule').value,
+    type_vente:type, agent_mandant:mandant,
+    prix_vente:pv, prix_achat:pa, marge_veh_ht:mv_ht,
+    total_frais_ht:frais, marge_nette_ht:mn_ht,
+    comm_vendeur:cv, comm_mandant:cm,
+    prime_excep:parseFloat(document.getElementById('m_prime').value)||0,
+  }).eq('id',editId);
+  if(error)return toast('Erreur : '+error.message,true);
+  toast('✅ Vente modifiée'); closeModal(); renderDashboard();
+}
+
+// ── PARAMS
+async function loadParams() {
+  const {data}=await sb.from('parametres').select('*');
+  params={};(data||[]).forEach(p=>{params[p.agent]=p;});
+}
+
+function renderParams() {
+  if(ROLE!=='manager')return;
+  document.getElementById('param-zone').innerHTML=AGENTS.map(a=>{
+    const p=params[a]||{};
+    return`<div class="pcard"><h4>👤 ${a}</h4>
+      <div class="pf"><label>Objectif ventes / mois</label><input type="number" id="pov_${a}" value="${p.obj_ventes||10}" min="0" step="1"></div>
+      <div class="pf"><label>Objectif mandats / mois</label><input type="number" id="pom_${a}" value="${p.obj_mandats||8}" min="0" step="1"></div>
+      <div class="pf"><label>Prime objectif ventes (€)</label><input type="number" id="ppv_${a}" value="${p.prime_obj_ventes||250}" min="0" step="10"></div>
+      <div class="pf"><label>Prime objectif mandats (€)</label><input type="number" id="ppm_${a}" value="${p.prime_obj_mandats||150}" min="0" step="10"></div>
+      <div class="pf"><label>Bonus par vente dépassée (€)</label><input type="number" id="ppb_${a}" value="${p.bonus_depassement||100}" min="0" step="10"></div>
+    </div>`;
+  }).join('');
+}
+
+async function saveParams() {
+  for(const a of AGENTS){
+    const upd={obj_ventes:parseInt(document.getElementById('pov_'+a)?.value)||0,obj_mandats:parseInt(document.getElementById('pom_'+a)?.value)||0,prime_obj_ventes:parseFloat(document.getElementById('ppv_'+a)?.value)||0,prime_obj_mandats:parseFloat(document.getElementById('ppm_'+a)?.value)||0,bonus_depassement:parseFloat(document.getElementById('ppb_'+a)?.value)||0};
+    await sb.from('parametres').update(upd).eq('agent',a);
+    params[a]={...params[a],...upd};
+  }
+  toast('✅ Paramètres enregistrés');
+}
+
+// Fermer modal au clic hors
+document.getElementById('modal-bg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
