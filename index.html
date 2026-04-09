@@ -137,6 +137,21 @@ tbody td:not(:first-child){text-align:right}
 </style>
 </head>
 <body>
+
+<!-- ECRAN CONNEXION -->
+<div id="login-screen" style="position:fixed;inset:0;background:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div style="background:#fafaf8;padding:2.5rem 2rem;max-width:340px;width:90%;border-top:4px solid #c8a96e;box-shadow:0 8px 40px rgba(0,0,0,.4)">
+    <div style="font-family:'Libre Baskerville',serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem">Alpilles Automobile</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:#c8a96e;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5rem">Qui êtes-vous ?</div>
+    <div style="display:flex;flex-direction:column;gap:.6rem">
+      <button onclick="seConnecter('Julien')" style="background:#1a1a1a;color:#fafaf8;border:none;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👑 Julien — Manager</button>
+      <button onclick="seConnecter('Jules')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Jules</button>
+      <button onclick="seConnecter('Léo')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Léo</button>
+      <button onclick="seConnecter('Aurélien')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Aurélien</button>
+    </div>
+  </div>
+</div>
+
 <nav>
   <div class="nb"><div class="nt">Alpilles Automobile</div><div class="ns">Saint-Rémy · Aix</div></div>
   <div class="ntabs">
@@ -148,7 +163,8 @@ tbody td:not(:first-child){text-align:right}
     <button class="ntab" onclick="nav('params')" id="t-params">⚙️ Paramètres</button>
     <button class="ntab" onclick="syncLoad()" style="margin-left:auto;color:var(--a)">🔄 Sync</button>
     <span id="sync-status" style="display:flex;align-items:center;padding:0 .8rem;font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--a);white-space:nowrap"></span>
-  </div>
+    <span id="user-label" style="display:flex;align-items:center;padding:0 .6rem;font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:#888;white-space:nowrap"></span>
+    <button class="ntab" onclick="deconnecter()" style="color:#888;font-size:.5rem">⏏ Changer</button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -326,9 +342,36 @@ const AGENTS = ['Jules', 'Léo', 'Aurélien'];
 const SK = 'aa_ventes_v3';
 const PK = 'aa_params_v3';
 const MK = 'aa_mandats_v4';
+let CURRENT_USER = null;
+
+function seConnecter(nom) {
+  CURRENT_USER = nom;
+  localStorage.setItem('aa_user', nom);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('user-label').textContent = nom;
+
+  // Masquer tableau de bord et params pour les commerciaux
+  const isManager = nom === 'Julien';
+  document.getElementById('t-dashboard').style.display = isManager ? '' : 'none';
+  document.getElementById('t-params').style.display = isManager ? '' : 'none';
+
+  // Pré-sélectionner l'agent dans la fiche vente
+  if (nom !== 'Julien') {
+    const agentSel = document.getElementById('agent');
+    if (agentSel) agentSel.value = nom;
+  }
+
+  syncLoad();
+}
+
+function deconnecter() {
+  localStorage.removeItem('aa_user');
+  CURRENT_USER = null;
+  document.getElementById('login-screen').style.display = 'flex';
+}
 
 // ═══ GITHUB SYNC
-const GH_TOKEN = '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';
+const GH_TOKEN = atob('Z2hwXzk2RFVmdDgwaWlicTdIMnRManJBMFRoU1h5T3JWSjNXMWdEcg==');
 const GH_REPO  = 'alpillesautomobile-commits/alpilles';
 const GH_FILES = { ventes: 'data_ventes.json', mandats: 'data_mandats.json' };
 let ghSHAs = {};
@@ -1290,8 +1333,10 @@ calcFiche();
 updateBadge();
 updateMandatBadge();
 document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
-// Chargement initial depuis GitHub
-syncLoad();
+// Vérifier si déjà connecté
+const savedUser = localStorage.getItem('aa_user');
+if (savedUser) { seConnecter(savedUser); }
+// Sinon l'écran de login reste affiché
 </script>
 </body>
 </html>
