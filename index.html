@@ -146,6 +146,8 @@ tbody td:not(:first-child){text-align:right}
     <button class="ntab" onclick="nav('dashboard')" id="t-dashboard">📊 Tableau de bord</button>
     <button class="ntab" onclick="nav('mandats')" id="t-mandats">📋 Mandats <span class="nbg" id="mand-badge" style="display:none"></span></button>
     <button class="ntab" onclick="nav('params')" id="t-params">⚙️ Paramètres</button>
+    <button class="ntab" onclick="syncLoad()" style="margin-left:auto;color:var(--a)">🔄 Sync</button>
+    <span id="sync-status" style="display:flex;align-items:center;padding:0 .8rem;font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--a);white-space:nowrap"></span>
   </div>
 </nav>
 <div class="toast" id="toast"></div>
@@ -324,6 +326,71 @@ const AGENTS = ['Jules', 'Léo', 'Aurélien'];
 const SK = 'aa_ventes_v3';
 const PK = 'aa_params_v3';
 const MK = 'aa_mandats_v4';
+
+// ═══ GITHUB SYNC
+const GH_TOKEN = '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';
+const GH_REPO  = 'alpillesautomobile-commits/alpilles';
+const GH_FILES = { ventes: 'data_ventes.json', mandats: 'data_mandats.json' };
+let ghSHAs = {};
+let syncTimeout = null;
+
+function ghHeaders() {
+  return { 'Authorization': 'token ' + GH_TOKEN, 'Content-Type': 'application/json' };
+}
+
+async function ghRead(filename) {
+  try {
+    const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filename, { headers: ghHeaders() });
+    if (r.status === 404) return null;
+    const d = await r.json();
+    ghSHAs[filename] = d.sha;
+    return JSON.parse(atob(d.content.replace(/\n/g,'')));
+  } catch(e) { return null; }
+}
+
+async function ghWrite(filename, data) {
+  const body = { message: 'sync ' + filename, content: btoa(unescape(encodeURIComponent(JSON.stringify(data)))) };
+  if (ghSHAs[filename]) body.sha = ghSHAs[filename];
+  try {
+    const r = await fetch('https://api.github.com/repos/' + GH_REPO + '/contents/' + filename, {
+      method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (d.content) ghSHAs[filename] = d.content.sha;
+  } catch(e) { console.error('ghWrite error', e); }
+}
+
+async function syncLoad() {
+  showSyncStatus('⏳ Chargement...');
+  const [v, m] = await Promise.all([ghRead(GH_FILES.ventes), ghRead(GH_FILES.mandats)]);
+  if (v) localStorage.setItem(SK, JSON.stringify(v));
+  if (m) localStorage.setItem(MK, JSON.stringify(m));
+  showSyncStatus('✅ Synchronisé');
+  updateBadge(); updateMandatBadge();
+  const act = document.querySelector('.ntab.on')?.id?.replace('t-','');
+  if (act === 'livraisons') afficherLivraisons();
+  if (act === 'recap') afficherRecap();
+  if (act === 'dashboard') afficherDashboard();
+  if (act === 'mandats') afficherMandats();
+}
+
+function scheduleSave() {
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(async () => {
+    showSyncStatus('💾 Sauvegarde...');
+    await Promise.all([
+      ghWrite(GH_FILES.ventes, loadVentes()),
+      ghWrite(GH_FILES.mandats, loadMandats())
+    ]);
+    showSyncStatus('✅ Sauvegardé');
+  }, 1500);
+}
+
+function showSyncStatus(msg) {
+  let el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = msg;
+}
 const FRAIS = [
   {id:'garantie',  label:'Garantie',                    tva:false, fixe:true},
   {id:'entretien', label:'Frais entretien / réparation', tva:true},
@@ -391,6 +458,7 @@ function loadVentes() {
 }
 function saveVentes(v) {
   localStorage.setItem(SK, JSON.stringify(v));
+  scheduleSave();
 }
 function loadParams() {
   try {
@@ -408,7 +476,10 @@ function loadMandats() {
   try { return JSON.parse(localStorage.getItem(MK)) || []; }
   catch { return []; }
 }
-function saveMandats(m) { localStorage.setItem(MK, JSON.stringify(m)); }
+function saveMandats(m) {
+  localStorage.setItem(MK, JSON.stringify(m));
+  scheduleSave();
+}
 
 function updateMandatBadge() {
   const mandats = loadMandats();
@@ -1218,8 +1289,9 @@ initFraisTable();
 calcFiche();
 updateBadge();
 updateMandatBadge();
-// Date par défaut aujourd'hui
 document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
+// Chargement initial depuis GitHub
+syncLoad();
 </script>
 </body>
 </html>
