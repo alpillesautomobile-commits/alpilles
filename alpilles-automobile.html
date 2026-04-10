@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpilles Automobile – Gestion</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap");
+:root{--n:#1a1a1a;--gm:#5a5a5a;--gc:#e8e4de;--bg:#f5f1ea;--w:#fafaf8;--a:#c8a96e;--ad:#9e7d45;--r:#c0392b;--v:#27704d;--vl:#eaf5ee;--b:#ccc8c0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#e0dbd3;font-family:"IBM Plex Sans",sans-serif;color:var(--n);min-height:100vh}
+/* NAV */
+nav{background:var(--n);display:flex;align-items:stretch;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3)}
+.nb{padding:.8rem 1.2rem;border-right:1px solid #333;display:flex;flex-direction:column;justify-content:center}
+.nt{font-family:"Libre Baskerville",serif;font-size:.85rem;font-weight:700;color:var(--w);letter-spacing:.04em;text-transform:uppercase}
+.ns{font-family:"IBM Plex Mono",monospace;font-size:.48rem;color:var(--a);letter-spacing:.12em;text-transform:uppercase;margin-top:.1rem}
+.ntabs{display:flex;flex:1;overflow-x:auto}
+.ntab{padding:0 1rem;display:flex;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:.58rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:3px solid transparent;border-top:none;border-left:none;border-right:none;background:none;white-space:nowrap;height:100%;transition:all .2s}
+.ntab:hover{color:var(--w)}.ntab.on{color:var(--w);border-bottom-color:var(--a)}
+.nbg{background:var(--a);color:var(--n);font-size:.48rem;padding:.1rem .3rem;margin-left:.2rem;font-weight:700;border-radius:2px}
+/* PAGES */
+.pg{display:none;padding:1.2rem 1rem}.pg.on{display:block}
+/* CARD */
+.card{max-width:900px;margin:0 auto 1.2rem;background:var(--w);box-shadow:0 4px 20px rgba(0,0,0,.1);border-top:4px solid var(--n)}
+.ch{background:var(--n);color:var(--w);padding:1rem 1.5rem}
+.ct{font-family:"Libre Baskerville",serif;font-size:.95rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.cs{font-family:"IBM Plex Mono",monospace;font-size:.52rem;color:var(--a);letter-spacing:.1em;text-transform:uppercase;margin-top:.15rem}
+.cb{padding:1.2rem 1.5rem}
+/* BTNS */
+.acts{display:flex;gap:.5rem;margin-bottom:1.2rem;justify-content:flex-end;flex-wrap:wrap}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:.58rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:.38rem .8rem;border:1.5px solid var(--n);background:transparent;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--n);color:var(--w)}
+.bp{background:var(--n);color:var(--w)}
+.bs{background:var(--v);color:var(--w);border-color:var(--v)}.bs:hover{background:#1e5a3a}
+.bd{border-color:var(--r);color:var(--r)}.bd:hover{background:var(--r);color:var(--w)}
+/* FORM */
+.sec{margin-bottom:1.4rem}
+.stl{font-family:"Libre Baskerville",serif;font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gm);border-bottom:1px solid var(--b);padding-bottom:.28rem;margin-bottom:.7rem}
+.gr{display:grid;grid-template-columns:1fr 1fr;gap:.55rem 1.4rem}
+.fl{display:flex;flex-direction:column;gap:.18rem}.fc{grid-column:1/-1}
+label{font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm)}
+input[type=text],input[type=number],input[type=date],select{border:none;border-bottom:1.5px solid var(--b);background:transparent;font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--n);padding:.22rem 0;outline:none;width:100%;transition:border-color .2s}
+input:focus,select:focus{border-bottom-color:var(--a)}
+input[readonly]{color:var(--gm);cursor:default}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.78rem}
+thead tr{background:var(--n);color:var(--w)}
+thead th{padding:.42rem .65rem;text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.54rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+thead th:not(:first-child){text-align:right}
+tbody tr{border-bottom:1px solid var(--gc)}
+tbody tr:hover{background:rgba(200,169,110,.05)}
+tbody td{padding:.38rem .65rem;vertical-align:middle}
+tbody td:not(:first-child){text-align:right}
+.tdl{font-size:.75rem;color:#2d2d2d}
+.ni{text-align:right;width:100px;font-size:.78rem}
+.cmp{font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:500}
+.neg{color:var(--r)}.pos{color:var(--v)}
+.tr td{background:var(--gc);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.8rem;padding:.5rem .65rem}
+.rm td{background:var(--n)!important;color:var(--w)!important;font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.88rem;padding:.6rem .65rem}
+.ct2 td{background:var(--a)!important;color:var(--n)!important;font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:.88rem;padding:.6rem .65rem}
+/* MISC */
+.tvab{font-family:"IBM Plex Mono",monospace;font-size:.48rem;font-weight:600;padding:.1rem .28rem;border-radius:2px;margin-left:.28rem;vertical-align:middle;background:#fde8e8;color:var(--r)}
+.ib{background:var(--bg);border-left:3px solid var(--a);padding:.55rem .8rem;font-family:"IBM Plex Mono",monospace;font-size:.68rem;margin-bottom:.7rem;color:var(--gm)}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:.5rem;font-weight:600;padding:.1rem .32rem;text-transform:uppercase}
+.tgc{background:#e8f0fe;color:#1a56d6}.tgs{background:#fde8e8;color:var(--r)}.tgcr{background:#fff3e0;color:#b45309}
+.tgl{background:var(--vl);color:var(--v)}.tga{background:#fff3e0;color:#b45309}
+/* TOAST */
+.toast{position:fixed;bottom:1.2rem;right:1.2rem;background:var(--v);color:var(--w);font-family:"IBM Plex Mono",monospace;font-size:.65rem;font-weight:600;letter-spacing:.08em;padding:.6rem 1rem;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;transform:translateY(120%);transition:transform .3s;text-transform:uppercase;max-width:300px;border-radius:2px}
+.toast.on{transform:translateY(0)}.toast.err{background:var(--r)}
+/* KPI */
+.kg{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.1rem}
+.kpi{background:var(--w);padding:.9rem 1rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border-top:3px solid var(--b)}
+.kpi.hl{border-top-color:var(--a)}.kpi.ok{border-top-color:var(--v)}.kpi.nf{border-top-color:#1a56d6}.kpi.wn{border-top-color:#e67e22}
+.kl{font-size:.54rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.3rem}
+.kv{font-family:"IBM Plex Mono",monospace;font-size:1.05rem;font-weight:600}
+.ks{font-family:"IBM Plex Mono",monospace;font-size:.55rem;color:var(--gm);margin-top:.18rem}
+/* MOIS SEL */
+.ms{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem;flex-wrap:wrap}
+.ms label{font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm)}
+.ms select{border:1px solid var(--b);padding:.25rem .55rem;font-family:"IBM Plex Mono",monospace;font-size:.75rem;background:var(--w);cursor:pointer;outline:none}
+/* AGENT TABS */
+.atbs{display:flex;border-bottom:2px solid var(--b);margin-bottom:1rem;flex-wrap:wrap}
+.atb{font-family:"IBM Plex Mono",monospace;font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.45rem 1rem;cursor:pointer;border:none;background:transparent;color:var(--gm);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s}
+.atb:hover{color:var(--n)}.atb.on{color:var(--n);border-bottom-color:var(--a)}
+/* PROG */
+.pw{height:8px;background:var(--gc);border-radius:4px;overflow:hidden;margin:.35rem 0}
+.pb{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.pb.pv{background:linear-gradient(90deg,var(--v),#3a9e6e)}.pb.pa{background:linear-gradient(90deg,var(--ad),var(--a))}.pb.pok{background:linear-gradient(90deg,#1e5a3a,var(--v))}
+/* PAY */
+.pr{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid var(--gc);font-size:.78rem}
+.pr:last-child{border:none}
+.ptot{background:var(--a);padding:.65rem .9rem;margin-top:.4rem;display:flex;justify-content:space-between;align-items:center}
+.ptot span:first-child{font-family:"IBM Plex Mono",monospace;font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.ptot span:last-child{font-family:"IBM Plex Mono",monospace;font-size:1.1rem;font-weight:700}
+/* VT */
+.vt{width:100%;border-collapse:collapse;font-size:.73rem;margin-bottom:.8rem}
+.vt thead tr{background:var(--n);color:var(--w)}
+.vt thead th{padding:.38rem .6rem;text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.52rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.vt tbody tr{border-bottom:1px solid var(--gc)}
+.vt tbody tr:hover{background:rgba(200,169,110,.05)}
+.vt td{padding:.33rem .6rem;vertical-align:middle}
+.delbtn{background:none;border:none;color:#ccc;cursor:pointer;font-size:.82rem;padding:0 .22rem;transition:color .15s}
+.delbtn:hover{color:var(--r)}
+/* LIVR */
+.lc{background:var(--w);border:1px solid var(--b);padding:.9rem 1.1rem;margin-bottom:.7rem}
+.lc.ld{border-color:var(--v);background:var(--vl)}
+/* AGENCE */
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1rem}
+.ac{background:var(--bg);border:1px solid var(--b);padding:.9rem 1.1rem}
+.ac h4{font-family:"Libre Baskerville",serif;font-size:.8rem;font-weight:700;margin-bottom:.6rem;padding-bottom:.28rem;border-bottom:2px solid var(--n)}
+.ar{display:flex;justify-content:space-between;padding:.25rem 0;border-bottom:1px solid var(--gc);font-size:.78rem}
+.ar:last-child{border:none;font-weight:700;padding-top:.4rem}
+/* PARAMS */
+.pg2{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.pc{background:var(--bg);border:1px solid var(--b);padding:.8rem .9rem}
+.pc h4{font-family:"Libre Baskerville",serif;font-size:.75rem;font-weight:700;margin-bottom:.55rem;padding-bottom:.28rem;border-bottom:1px solid var(--b)}
+.pf{display:flex;flex-direction:column;gap:.13rem;margin-bottom:.5rem}
+.pf label{font-size:.53rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gm)}
+.pf input{border:none;border-bottom:1px solid var(--b);background:transparent;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:#1a56d6;padding:.16rem 0;outline:none;width:100%}
+/* CROISE */
+.cb2{background:var(--bg);border-left:3px solid var(--ad);padding:.55rem .8rem;font-family:"IBM Plex Mono",monospace;font-size:.7rem;margin-top:.4rem;color:var(--gm);line-height:1.65}
+/* OBJ CARDS */
+.og{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.1rem}
+.oc{background:var(--w);border:1px solid var(--b);padding:.95rem 1rem;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.oc.ok{border-color:var(--v);background:var(--vl)}
+.oi{font-size:1.4rem;margin-bottom:.4rem}
+.ol{font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.28rem}
+.on2{font-family:"IBM Plex Mono",monospace;font-size:1.5rem;font-weight:700;line-height:1}
+.oc.ok .on2{color:var(--v)}
+.os{font-family:"IBM Plex Mono",monospace;font-size:.62rem;color:var(--gm);margin-top:.25rem}
+/* VISA */
+.vz{margin-top:1.5rem;border-top:2px solid var(--n);padding-top:1.1rem;display:flex;justify-content:space-between;gap:1.5rem}
+.vf{flex:1}.vf label{display:block;margin-bottom:.35rem}
+.vl2{border-bottom:1.5px solid var(--n);height:1.8rem}
+@media print{nav,.acts,.toast,.atbs,.ms,.delbtn{display:none!important}body{background:white}.card{box-shadow:none}}
+@media(max-width:640px){.gr{grid-template-columns:1fr}.fc{grid-column:1}.kg{grid-template-columns:1fr 1fr}.pg2{grid-template-columns:1fr}.cb{padding:1rem}.ag{grid-template-columns:1fr}.og{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ECRAN CONNEXION -->
+
+<div id="login-screen" style="position:fixed;inset:0;background:#1a1a1a;display:flex;align-items:center;justify-content:center;z-index:9999">
+  <div style="background:#fafaf8;padding:2.5rem 2rem;max-width:340px;width:90%;border-top:4px solid #c8a96e;box-shadow:0 8px 40px rgba(0,0,0,.4)">
+    <div style="font-family:'Libre Baskerville',serif;font-size:1.1rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.3rem">Alpilles Automobile</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:#c8a96e;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.5rem">Qui êtes-vous ?</div>
+    <div style="display:flex;flex-direction:column;gap:.6rem">
+      <button onclick="seConnecter('Julien')" style="background:#1a1a1a;color:#fafaf8;border:none;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👑 Julien — Manager</button>
+      <button onclick="seConnecter('Jules')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Jules</button>
+      <button onclick="seConnecter('Léo')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Léo</button>
+      <button onclick="seConnecter('Aurélien')" style="background:transparent;color:#1a1a1a;border:1.5px solid #1a1a1a;padding:.75rem 1rem;font-family:'IBM Plex Mono',monospace;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-align:left">👤 Aurélien</button>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="nb"><div class="nt">Alpilles Automobile</div><div class="ns">Saint-Rémy · Aix</div></div>
+  <div class="ntabs">
+    <button class="ntab on" onclick="nav('fiche')" id="t-fiche">📝 Nouvelle vente</button>
+    <button class="ntab" onclick="nav('livraisons')" id="t-livraisons">🚗 Livraisons <span class="nbg" id="livr-badge" style="display:none"></span></button>
+    <button class="ntab" onclick="nav('recap')" id="t-recap">📈 Mon récap</button>
+    <button class="ntab" onclick="nav('dashboard')" id="t-dashboard">📊 Tableau de bord</button>
+    <button class="ntab" onclick="nav('mandats')" id="t-mandats">📋 Mandats <span class="nbg" id="mand-badge" style="display:none"></span></button>
+    <button class="ntab" onclick="nav('params')" id="t-params">⚙️ Paramètres</button>
+    <button class="ntab" onclick="syncLoad()" style="margin-left:auto;color:var(--a)">🔄 Sync</button>
+    <span id="sync-status" style="display:flex;align-items:center;padding:0 .8rem;font-family:'IBM Plex Mono',monospace;font-size:.55rem;color:var(--a);white-space:nowrap"></span>
+    <span id="user-label" style="display:flex;align-items:center;padding:0 .6rem;font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:#888;white-space:nowrap"></span>
+    <button class="ntab" onclick="deconnecter()" style="color:#888;font-size:.5rem">⏏ Changer</button>
+  </div>
+</nav>
+<div class="toast" id="toast"></div>
+
+<!-- FICHE -->
+
+<div class="pg on" id="pg-fiche">
+<div class="card">
+  <div class="ch"><div class="ct">Fiche de Gestion</div><div class="cs">Saisie d'une vente · Enregistrement automatique</div></div>
+  <div class="cb">
+    <div class="acts">
+      <button class="btn" onclick="resetFiche()">Réinitialiser</button>
+      <button class="btn bp" onclick="window.print()">Imprimer / PDF</button>
+      <button class="btn bs" id="btn-enreg" onclick="enregistrer()">✔ Enregistrer au tableau de bord</button>
+    </div>
+    <div class="sec">
+      <div class="stl">Identification</div>
+      <div class="gr">
+        <div class="fl"><label>Agence</label>
+          <select id="agence"><option value="">— Sélectionner —</option>
+            <option>Agence Saint-Rémy-de-Provence</option>
+            <option>Agence Aix-en-Provence</option></select></div>
+        <div class="fl"><label>Agent commercial</label>
+          <select id="agent" onchange="calcFiche()"><option value="">— Sélectionner —</option>
+            <option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+        <div class="fl"><label>Date de la vente</label><input type="date" id="date_vente"></div>
+        <div class="fl"><label>Nom du client</label><input type="text" id="client" placeholder="Nom Prénom"></div>
+        <div class="fl fc"><label>Véhicule</label><input type="text" id="vehicule" placeholder="Marque Modèle Année"></div>
+        <div class="fl"><label>Type de vente</label>
+          <select id="type_vente" onchange="calcFiche()">
+            <option value="classique">Vente classique (40%)</option>
+            <option value="stock">Stock société (20%)</option>
+            <option value="croise">Mandat croisé (20%/20%)</option></select></div>
+        <div class="fl" id="bloc-mandant" style="display:none"><label>Agent mandant</label>
+          <select id="agent_mandant"><option value="">— Sélectionner —</option>
+            <option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+        <div class="fl"><label>Prix de vente TTC (€)</label><input type="number" id="prix_vente" placeholder="0" min="0" step="1" oninput="calcFiche()"></div>
+        <div class="fl"><label>Prix d'achat TTC (€)</label><input type="number" id="prix_achat" placeholder="0" min="0" step="1" oninput="calcFiche()"></div>
+        <div class="fl fc"><label>Marge brute véhicule — calculé auto</label><input type="text" id="marge_brute" readonly placeholder="—"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="stl">Frais</div>
+      <table><thead><tr><th>Désignation</th><th>TVA ?</th><th>Montant TTC (€)</th><th>HT (€)</th></tr></thead>
+      <tbody id="frais-body"></tbody></table>
+    </div>
+    <div class="sec">
+      <div class="stl">Récapitulatif</div>
+      <table><thead><tr><th>Élément</th><th>TTC (€)</th><th>HT (€)</th></tr></thead>
+      <tbody>
+        <tr><td class="tdl">Marge véhicule brute</td><td class="cmp pos" id="r-vttc">—</td><td class="cmp pos" id="r-vht">—</td></tr>
+        <tr><td class="tdl">Total frais</td><td class="cmp neg" id="r-fttc">—</td><td class="cmp neg" id="r-fht">—</td></tr>
+        <tr class="rm"><td>Marge nette validée</td><td class="cmp" id="r-mttc">—</td><td class="cmp" id="r-mht">—</td></tr>
+      </tbody></table>
+    </div>
+    <div class="sec">
+      <div class="stl">Commission agent (HT)</div>
+      <div class="ib" id="comm-info">—</div>
+      <table><thead><tr><th>Élément</th><th>HT (€)</th></tr></thead>
+      <tbody>
+        <tr><td class="tdl">Marge nette HT base</td><td class="cmp" id="r-base">—</td></tr>
+        <tr><td class="tdl" id="comm-lbl">Commission vendeur</td><td class="cmp" id="r-comm">—</td></tr>
+        <tr id="row-croise" style="display:none"><td colspan="2"><div class="cb2" id="croise-det">—</div></td></tr>
+        <tr><td class="tdl">Prime exceptionnelle</td><td><input class="ni" type="number" id="prime_excep" placeholder="0" step="1" oninput="calcFiche()"></td></tr>
+        <tr class="ct2"><td id="total-lbl">Total à verser</td><td class="cmp" id="r-total">—</td></tr>
+      </tbody></table>
+    </div>
+    <div class="vz">
+      <div class="vf"><label>Visa Julien Aranda</label><div class="vl2"></div></div>
+      <div class="vf"><label>Date</label><div class="vl2"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- LIVRAISONS -->
+
+<div class="pg" id="pg-livraisons">
+<div class="card">
+  <div class="ch"><div class="ct">Suivi des Livraisons</div><div class="cs">Paye calculée au mois de livraison</div></div>
+  <div class="cb">
+    <div class="ms">
+      <label>Mois</label><select id="livr-mois" onchange="afficherLivraisons()"></select>
+      <span id="livr-cpt" style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--gm);margin-left:auto"></span>
+    </div>
+    <div id="livr-zone"></div>
+  </div>
+</div>
+</div>
+
+<!-- RECAP -->
+
+<div class="pg" id="pg-recap">
+<div class="card">
+  <div class="ch"><div class="ct">Mon Récap</div><div class="cs">Objectifs · Progression · Paye estimée</div></div>
+  <div class="cb">
+    <div class="ms"><label>Mois</label><select id="recap-mois" onchange="afficherRecap()"></select></div>
+    <div id="recap-zone"></div>
+  </div>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+
+<div class="pg" id="pg-dashboard">
+<div class="card">
+  <div class="ch"><div class="ct">Tableau de Bord</div><div class="cs">Vue manager · Toutes agences</div></div>
+  <div class="cb">
+    <div class="ms">
+      <label>Mois</label><select id="dash-mois" onchange="afficherDashboard()"></select>
+      <label style="margin-left:.8rem">Vue</label>
+      <select id="dash-vue" onchange="afficherDashboard()">
+        <option value="vente">Par vente signée</option>
+        <option value="livraison">Par livraison (paye réelle)</option>
+      </select>
+    </div>
+    <div class="kg" id="kpi-zone"></div>
+    <div class="stl" style="margin-bottom:.7rem">Par agence</div>
+    <div class="ag" id="ag-zone"></div>
+    <div class="stl" style="margin-bottom:.7rem">Par agent</div>
+    <div class="atbs" id="ag-tabs"></div>
+    <div id="ag-zone2"></div>
+  </div>
+</div>
+</div>
+
+<!-- MANDATS -->
+
+<div class="pg" id="pg-mandats">
+<div class="card">
+  <div class="ch"><div class="ct">Mandats</div><div class="cs">Saisie rapide · Suivi exclusif vs simple</div></div>
+  <div class="cb">
+    <div style="background:var(--bg);border:1px solid var(--b);padding:1rem 1.2rem;margin-bottom:1.2rem">
+      <div class="stl" style="margin-bottom:.7rem">Nouveau mandat</div>
+      <div class="gr" style="margin-bottom:.7rem">
+        <div class="fl"><label>Agent</label>
+          <select id="m-agent"><option value="">— Sélectionner —</option>
+            <option>Jules</option><option>Léo</option><option>Aurélien</option></select></div>
+        <div class="fl"><label>Date</label><input type="date" id="m-date"></div>
+        <div class="fl fc"><label>Véhicule (Marque Modèle)</label><input type="text" id="m-vehicule" placeholder="ex: Peugeot 3008 2021"></div>
+        <div class="fl"><label>Nom du propriétaire</label><input type="text" id="m-proprio" placeholder="Nom Prénom"></div>
+        <div class="fl"><label>Type de mandat</label>
+          <select id="m-type">
+            <option value="exclusif">Exclusif (70%)</option>
+            <option value="simple">Simple (30%)</option></select></div>
+      </div>
+      <div class="acts" style="margin-bottom:0">
+        <button class="btn bs" onclick="enregistrerMandat()">✔ Enregistrer le mandat</button>
+      </div>
+    </div>
+    <div class="ms">
+      <label>Mois</label><select id="mand-mois" onchange="afficherMandats()"></select>
+      <span id="mand-cpt" style="font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--gm);margin-left:auto"></span>
+    </div>
+    <div id="mand-zone"></div>
+  </div>
+</div>
+</div>
+
+<!-- PARAMS -->
+
+<div class="pg" id="pg-params">
+<div class="card">
+  <div class="ch"><div class="ct">Paramètres</div><div class="cs">Objectifs et pay plan</div></div>
+  <div class="cb">
+    <div class="acts"><button class="btn bs" onclick="sauvegarderParams()">✔ Enregistrer</button></div>
+    <div class="pg2" id="param-zone"></div>
+    <div style="margin-top:1.2rem;background:var(--bg);border-left:3px solid var(--a);padding:.7rem .9rem;font-size:.76rem;color:var(--gm)">
+      <strong style="font-family:'IBM Plex Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.08em">Paliers prime marge HT</strong><br><br>
+      ≥ 10 000 € → 100 € &nbsp;|&nbsp; ≥ 15 000 € → 250 € &nbsp;|&nbsp; ≥ 20 000 € → 400 € &nbsp;|&nbsp; ≥ 25 000 € → 650 €
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══ CONSTANTES
+const TVA = 1.20;
+const AGENTS = ['Jules', 'Léo', 'Aurélien'];
+const SK = 'aa_ventes_v3';
+const PK = 'aa_params_v3';
+const MK = 'aa_mandats_v4';
+let CURRENT_USER = null;
+
+function seConnecter(nom) {
+  CURRENT_USER = nom;
+  localStorage.setItem('aa_user', nom);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('user-label').textContent = nom;
+
+  const isManager = nom === 'Julien';
+  document.getElementById('t-dashboard').style.display = isManager ? '' : 'none';
+  document.getElementById('t-params').style.display = isManager ? '' : 'none';
+
+  if (nom !== 'Julien') {
+    const agentSel = document.getElementById('agent');
+    if (agentSel) agentSel.value = nom;
+  }
+
+  syncLoad();
+}
+
+function deconnecter() {
+  localStorage.removeItem('aa_user');
+  CURRENT_USER = null;
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════
+// GITHUB SYNC — MERGE-BASED (no overwrite)
+// ═══════════════════════════════════════════════
+const GH_TOKEN  = atob('Z2hwXzk2RFVmdDgwaWlicTdIMnRManJBMFRoU1h5T3JWSjNXMWdEcg==');
+const GH_REPO   = 'alpillesautomobile-commits/alpilles';
+const GH_FILES  = { ventes: 'data_ventes.json', mandats: 'data_mandats.json' };
+// Tracks the latest SHA we know about for each file
+const ghSHAs    = {};
+let syncTimeout = null;
+let isSyncing   = false;
+
+function ghHeaders() {
+  return {
+    'Authorization': 'token ' + GH_TOKEN,
+    'Content-Type':  'application/json'
+  };
+}
+
+// Read a file from GitHub. Returns parsed JSON or null.
+// If file doesn't exist (404), creates it with empty array automatically.
+async function ghRead(filename) {
+  try {
+    const r = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/contents/' + filename,
+      { headers: ghHeaders(), cache: 'no-store' }
+    );
+    if (r.status === 404) {
+      // File doesn't exist yet — create it with empty array
+      console.log('ghRead: ' + filename + ' not found, creating...');
+      await ghWrite(filename, []);
+      return [];
+    }
+    if (!r.ok) {
+      console.warn('ghRead HTTP error', r.status, filename);
+      return null;
+    }
+    const d = await r.json();
+    ghSHAs[filename] = d.sha;
+    // GitHub base64 may contain newlines — strip them before decoding
+    const content = d.content.replace(/\n/g, '');
+    return JSON.parse(decodeURIComponent(escape(atob(content))));
+  } catch(e) {
+    console.error('ghRead error', filename, e);
+    return null;
+  }
+}
+
+// Write data to GitHub with automatic conflict-retry.
+// On 409 Conflict (SHA mismatch) it re-fetches the SHA and retries once.
+async function ghWrite(filename, data, retrying) {
+  const json    = JSON.stringify(data);
+  const encoded = btoa(unescape(encodeURIComponent(json)));
+  const body    = {
+    message: 'sync:' + filename + ':' + (CURRENT_USER || 'app') + ':' + Date.now(),
+    content: encoded
+  };
+  if (ghSHAs[filename]) body.sha = ghSHAs[filename];
+
+  try {
+    const r = await fetch(
+      'https://api.github.com/repos/' + GH_REPO + '/contents/' + filename,
+      { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) }
+    );
+
+    if (r.status === 409 && !retrying) {
+      // SHA conflict — someone else wrote first. Re-read to get fresh SHA, then retry.
+      console.warn('ghWrite 409 conflict on', filename, '— re-reading SHA and retrying');
+      await ghRead(filename); // updates ghSHAs[filename]
+      return ghWrite(filename, data, true);
+    }
+
+    if (!r.ok) {
+      const err = await r.json().catch(() => ({}));
+      console.error('ghWrite failed', r.status, filename, err.message || '');
+      return false;
+    }
+
+    const d = await r.json();
+    if (d.content && d.content.sha) ghSHAs[filename] = d.content.sha;
+    return true;
+  } catch(e) {
+    console.error('ghWrite error', filename, e);
+    return false;
+  }
+}
+
+// ── Merge helpers ──────────────────────────────
+// Merge remote array into local array by ID.
+// Remote items win for updates, new items on either side are kept.
+// Items deleted locally (not in local) are re-added from remote only if
+// they didn't exist locally before (we can't distinguish delete vs never-synced,
+// so we use a "tombstone" approach via a separate deleted-IDs list).
+
+function getDeleted(key) {
+  try { return JSON.parse(localStorage.getItem(key + '_deleted')) || []; }
+  catch { return []; }
+}
+function addDeleted(key, id) {
+  const ids = getDeleted(key);
+  if (!ids.includes(id)) { ids.push(id); localStorage.setItem(key + '_deleted', JSON.stringify(ids)); }
+}
+
+function mergeArrays(local, remote, deletedKey) {
+  if (!remote) return local;
+  const deleted = getDeleted(deletedKey);
+  const byId = {};
+  // Start with remote as base
+  for (const item of remote) {
+    if (!deleted.includes(item.id)) byId[item.id] = item;
+  }
+  // Overlay local (local changes win for same ID — last-edited wins per device)
+  for (const item of local) {
+    if (!deleted.includes(item.id)) byId[item.id] = item;
+  }
+  return Object.values(byId).sort(function(a,b) {
+    return (a.date||'').localeCompare(b.date||'');
+  });
+}
+
+// ── Main sync functions ────────────────────────
+
+// Pull from GitHub, merge into local, refresh UI.
+async function syncLoad() {
+  if (isSyncing) return;
+  isSyncing = true;
+  showSyncStatus('⏳ Sync...');
+  try {
+    const [remoteVentes, remoteMandats] = await Promise.all([
+      ghRead(GH_FILES.ventes),
+      ghRead(GH_FILES.mandats)
+    ]);
+
+    if (remoteVentes !== null) {
+      const local  = loadVentes();
+      const merged = mergeArrays(local, remoteVentes, SK);
+      localStorage.setItem(SK, JSON.stringify(merged));
+    }
+    if (remoteMandats !== null) {
+      const local  = loadMandats();
+      const merged = mergeArrays(local, remoteMandats, MK);
+      localStorage.setItem(MK, JSON.stringify(merged));
+    }
+
+    if (remoteVentes === null && remoteMandats === null) {
+      showSyncStatus('⚠️ GitHub inaccessible');
+      toast('❌ Impossible de joindre GitHub — vérifie ta connexion', true);
+    } else {
+      showSyncStatus('✅ ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}));
+      toast('🔄 Synchronisé avec GitHub');
+    }
+
+    updateBadge();
+    updateMandatBadge();
+    const act = document.querySelector('.ntab.on')?.id?.replace('t-','');
+    if (act === 'livraisons') afficherLivraisons();
+    if (act === 'recap')      afficherRecap();
+    if (act === 'dashboard')  afficherDashboard();
+    if (act === 'mandats')    afficherMandats();
+  } catch(e) {
+    showSyncStatus('⚠️ Erreur sync');
+    toast('❌ Erreur sync : ' + e.message, true);
+    console.error('syncLoad error', e);
+  } finally {
+    isSyncing = false;
+  }
+}
+
+// Push local data to GitHub after a short debounce.
+// Pull-then-push to ensure we never overwrite remote additions.
+function scheduleSave() {
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(async () => {
+    showSyncStatus('💾 Sauvegarde...');
+    try {
+      // Pull latest from remote first, merge, then push merged result
+      const [remoteVentes, remoteMandats] = await Promise.all([
+        ghRead(GH_FILES.ventes),
+        ghRead(GH_FILES.mandats)
+      ]);
+
+      const localVentes  = loadVentes();
+      const localMandats = loadMandats();
+
+      const mergedVentes  = mergeArrays(localVentes,  remoteVentes,  SK);
+      const mergedMandats = mergeArrays(localMandats, remoteMandats, MK);
+
+      // Update local with merged result
+      localStorage.setItem(SK, JSON.stringify(mergedVentes));
+      localStorage.setItem(MK, JSON.stringify(mergedMandats));
+
+      const [okV, okM] = await Promise.all([
+        ghWrite(GH_FILES.ventes,  mergedVentes),
+        ghWrite(GH_FILES.mandats, mergedMandats)
+      ]);
+
+      if (okV && okM) {
+        showSyncStatus('✅ ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}));
+      } else {
+        showSyncStatus('⚠️ Sauvegarde partielle');
+      }
+    } catch(e) {
+      showSyncStatus('⚠️ Erreur sauvegarde');
+      console.error('scheduleSave error', e);
+    }
+  }, 1500);
+}
+
+function showSyncStatus(msg) {
+  const el = document.getElementById('sync-status');
+  if (el) el.textContent = msg;
+}
+
+// ═══ FRAIS
+const FRAIS = [
+  {id:'garantie',  label:'Garantie',                    tva:false, fixe:true},
+  {id:'entretien', label:'Frais entretien / réparation', tva:true},
+  {id:'ct',        label:'Contrôle technique',           tva:true},
+  {id:'revision',  label:'Révision',                     tva:true},
+  {id:'cg_forfait',label:'Frais carte grise (forfait)',   tva:false, fixe:true, defaut:40},
+  {id:'cg_taxe',   label:'Carte grise (taxe régionale)', tva:false, fixe:true},
+  {id:'transport', label:'Frais de transport',            tva:true},
+  {id:'nettoyage', label:'Frais de nettoyage',            tva:true},
+  {id:'coffret',   label:'Coffret cadeau',                tva:true},
+  {id:'autres',    label:'Autres frais',                  tva:true},
+];
+
+// ═══ UTILS
+function getNum(id) { const x = parseFloat(document.getElementById(id)?.value); return isNaN(x) ? 0 : x; }
+function getTva(id) { const e = document.getElementById(id); return e ? e.value === 'oui' : true; }
+function htDeTtc(t, avecTva) { return avecTva ? t / TVA : t; }
+function fmt(n) { if (n === null || n === undefined) return '—'; return parseFloat(n).toFixed(2).replace('.', ',') + ' €'; }
+function setTxt(id, v) {
+  const e = document.getElementById(id); if (!e) return;
+  e.textContent = fmt(v); e.className = e.className.replace(/\s*(neg|pos)/g, '');
+  if (v < -0.005) e.classList.add('neg'); else if (v > 0.005) e.classList.add('pos');
+}
+function getMois(dateStr) { if (!dateStr) return null; const d = new Date(dateStr); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function lblMois(k) {
+  if (!k) return '—'; const [y,m] = k.split('-');
+  return ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'][parseInt(m)-1] + ' ' + y;
+}
+function fmtDate(s) { if (!s) return '—'; const [y,m,d] = s.split('-'); return d+'/'+m+'/'+y; }
+function palier(m) { return m>=25000?650:m>=20000?400:m>=15000?250:m>=10000?100:0; }
+function toast(msg, err) {
+  const e = document.getElementById('toast'); if (!e) return;
+  e.textContent = msg; e.className = 'toast on' + (err ? ' err' : '');
+  clearTimeout(e._t); e._t = setTimeout(() => { e.className = 'toast'; }, 3500);
+}
+
+// ═══ STORAGE
+function loadVentes()  { try { return JSON.parse(localStorage.getItem(SK)) || []; } catch { return []; } }
+function loadMandats() { try { return JSON.parse(localStorage.getItem(MK)) || []; } catch { return []; } }
+function loadParams()  {
+  try { const p = JSON.parse(localStorage.getItem(PK)); if (p) return p; } catch {}
+  const def = {};
+  AGENTS.forEach(a => { def[a] = {obj_ventes:10, obj_mandats:8, prime_obj_ventes:250, prime_obj_mandats:150, bonus_dep:100}; });
+  return def;
+}
+function saveVentes(v)  { localStorage.setItem(SK, JSON.stringify(v)); scheduleSave(); }
+function saveMandats(m) { localStorage.setItem(MK, JSON.stringify(m)); scheduleSave(); }
+function saveParams(p)  { localStorage.setItem(PK, JSON.stringify(p)); }
+
+// ═══ MANDATS
+function updateMandatBadge() {
+  const mandats = loadMandats();
+  const curMois = getMois(new Date().toISOString().slice(0,10));
+  const n = mandats.filter(m => m.mois === curMois && m.statut === 'en_cours').length;
+  const b = document.getElementById('mand-badge');
+  if (b) { b.textContent = n; b.style.display = n > 0 ? '' : 'none'; }
+}
+
+function enregistrerMandat() {
+  const agent    = document.getElementById('m-agent')?.value;
+  const dateStr  = document.getElementById('m-date')?.value;
+  const vehicule = document.getElementById('m-vehicule')?.value?.trim();
+  const proprio  = document.getElementById('m-proprio')?.value?.trim();
+  const type     = document.getElementById('m-type')?.value || 'exclusif';
+
+  if (!agent)    return toast('Sélectionne un agent', true);
+  if (!dateStr)  return toast('Indique la date du mandat', true);
+  if (!vehicule) return toast('Indique le véhicule', true);
+  if (!proprio)  return toast('Indique le propriétaire', true);
+
+  const mandat = { id: Date.now(), date: dateStr, mois: getMois(dateStr), agent, vehicule, proprio, type, statut: 'en_cours' };
+  const mandats = loadMandats();
+  mandats.push(mandat);
+  saveMandats(mandats);
+  updateMandatBadge();
+  afficherMandats();
+  toast('📋 Mandat enregistré — ' + vehicule);
+
+  document.getElementById('m-agent').value = '';
+  document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('m-vehicule').value = '';
+  document.getElementById('m-proprio').value = '';
+  document.getElementById('m-type').value = 'exclusif';
+}
+
+function validerMandatVendu(id) {
+  const mandats = loadMandats();
+  const idx = mandats.findIndex(m => m.id === id);
+  if (idx < 0) return;
+  mandats[idx].statut = 'vendu';
+  saveMandats(mandats);
+  updateMandatBadge();
+  afficherMandats();
+  toast('✅ Mandat marqué vendu');
+}
+
+function supprimerMandat(id) {
+  if (!confirm('Supprimer ce mandat ?')) return;
+  addDeleted(MK, id);
+  const mandats = loadMandats().filter(m => m.id !== id);
+  saveMandats(mandats);
+  updateMandatBadge();
+  afficherMandats();
+  toast('Mandat supprimé');
+}
+
+function remplirMoisMandats(selId) {
+  const ventes  = loadVentes();
+  const mandats = loadMandats();
+  const allMois = Array.from(new Set(
+    ventes.map(v => v.mois)
+    .concat(ventes.filter(v => v.mois_livraison).map(v => v.mois_livraison))
+    .concat(mandats.map(m => m.mois))
+    .filter(Boolean)
+  )).sort().reverse();
+  const curMois = getMois(new Date().toISOString().slice(0,10));
+  if (!allMois.includes(curMois)) allMois.push(curMois);
+  const sel = document.getElementById(selId);
+  if (!sel) return curMois;
+  const prev = sel.value;
+  sel.innerHTML = '';
+  allMois.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = lblMois(m);
+    if (m === (prev || allMois[0])) o.selected = true;
+    sel.appendChild(o);
+  });
+  return sel.value;
+}
+
+function afficherMandats() {
+  const mois    = remplirMoisMandats('mand-mois');
+  const mandats = loadMandats();
+  const zone    = document.getElementById('mand-zone');
+  if (!zone) return;
+
+  const dm     = mandats.filter(m => m.mois === mois);
+  const excl   = dm.filter(m => m.type === 'exclusif');
+  const simple = dm.filter(m => m.type === 'simple');
+  const total  = dm.length;
+  const pctE   = total ? Math.round(excl.length / total * 100) : 0;
+  const pctS   = total ? Math.round(simple.length / total * 100) : 0;
+  const iconExcl = pctE >= 50 ? '✅' : '⚠️';
+
+  const cpt = document.getElementById('mand-cpt');
+  if (cpt) cpt.textContent = total + ' mandat(s) · ' + excl.length + ' exclusif(s) · ' + simple.length + ' simple(s)';
+
+  if (!total) {
+    zone.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gm);font-family:IBM Plex Mono,monospace;font-size:.76rem">Aucun mandat ce mois.</div>';
+    return;
+  }
+
+  const barHtml = '<div style="background:var(--w);border:1px solid var(--b);padding:.85rem 1rem;margin-bottom:1rem">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem">'
+    + '<div style="font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm)">Exclusif vs Simple — ' + iconExcl + ' ' + pctE + '% exclusifs</div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:.72rem;color:var(--gm)">' + excl.length + ' excl. · ' + simple.length + ' simple</div></div>'
+    + '<div style="height:10px;background:var(--gc);border-radius:5px;overflow:hidden;display:flex">'
+    + '<div style="width:' + pctE + '%;background:linear-gradient(90deg,var(--ad),var(--a));transition:width .6s"></div>'
+    + '<div style="width:' + pctS + '%;background:#c0cfe0"></div></div>'
+    + '<div style="display:flex;gap:1.2rem;margin-top:.4rem">'
+    + '<span style="font-family:IBM Plex Mono,monospace;font-size:.6rem;color:var(--ad)">■ Exclusif ' + pctE + '%</span>'
+    + '<span style="font-family:IBM Plex Mono,monospace;font-size:.6rem;color:#5a7a9a">■ Simple ' + pctS + '%</span></div>'
+    + (pctE < 50 ? '<div style="font-family:IBM Plex Mono,monospace;font-size:.62rem;color:#b45309;margin-top:.4rem">⚠️ Moins de 50% d\'exclusifs ce mois — à améliorer</div>' : '')
+    + '</div>';
+
+  const tableHtml = '<table class="vt"><thead><tr><th>Date</th><th>Véhicule</th><th>Propriétaire</th><th>Agent</th><th>Type</th><th>Statut</th><th></th></tr></thead><tbody>'
+    + dm.map(m => {
+        const typeTag   = m.type === 'exclusif' ? '<span class="tag" style="background:#fff3e0;color:#b45309">EXCLUSIF</span>' : '<span class="tag" style="background:#e8f0fe;color:#1a56d6">SIMPLE</span>';
+        const statutTag = m.statut === 'vendu' ? '<span class="tag tgl">Vendu</span>' : '<span class="tag tgcr">En cours</span>';
+        return '<tr>'
+          + '<td style="font-family:IBM Plex Mono,monospace;font-size:.68rem;white-space:nowrap">' + fmtDate(m.date) + '</td>'
+          + '<td style="font-weight:500;font-size:.76rem">' + m.vehicule + '</td>'
+          + '<td style="font-size:.73rem;color:var(--gm)">' + m.proprio + '</td>'
+          + '<td style="font-size:.73rem">' + m.agent + '</td>'
+          + '<td>' + typeTag + '</td>'
+          + '<td>' + statutTag + '</td>'
+          + '<td style="white-space:nowrap">'
+          + (m.statut === 'en_cours' ? '<button class="btn bs" style="padding:.12rem .35rem;font-size:.5rem;margin-right:.2rem" onclick="validerMandatVendu(' + m.id + ')">✔ Vendu</button>' : '')
+          + '<button class="delbtn" onclick="supprimerMandat(' + m.id + ')" title="Supprimer">✕</button>'
+          + '</td></tr>';
+      }).join('')
+    + '</tbody></table>';
+
+  const agentStats = AGENTS.map(a => {
+    const am = dm.filter(m => m.agent === a);
+    if (!am.length) return '';
+    const ae  = am.filter(m => m.type === 'exclusif').length;
+    const as2 = am.filter(m => m.type === 'simple').length;
+    const pE  = am.length ? Math.round(ae / am.length * 100) : 0;
+    return '<div style="background:var(--bg);border:1px solid var(--b);padding:.65rem .85rem;flex:1;min-width:180px">'
+      + '<div style="font-family:\'Libre Baskerville\',serif;font-size:.75rem;font-weight:700;margin-bottom:.4rem">👤 ' + a + '</div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:.82rem;font-weight:600">' + am.length + ' mandat(s)</div>'
+      + '<div style="font-size:.62rem;color:var(--gm);margin:.2rem 0">' + ae + ' excl. · ' + as2 + ' simple · ' + pE + '% excl.</div>'
+      + '<div style="height:6px;background:var(--gc);border-radius:3px;overflow:hidden;margin-top:.3rem"><div style="width:' + pE + '%;height:100%;background:linear-gradient(90deg,var(--ad),var(--a))"></div></div>'
+      + (pE < 50 && am.length ? '<div style="font-size:.58rem;color:#b45309;margin-top:.22rem">⚠️ Objectif exclusifs non atteint</div>' : (am.length ? '<div style="font-size:.58rem;color:var(--v);margin-top:.22rem">✅ Bon ratio exclusifs</div>' : ''))
+      + '</div>';
+  }).filter(Boolean).join('');
+
+  zone.innerHTML = barHtml
+    + (agentStats ? '<div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1rem">' + agentStats + '</div>' : '')
+    + '<div class="stl" style="margin-bottom:.65rem">Mandats de ' + lblMois(mois) + ' (' + total + ')</div>'
+    + tableHtml;
+}
+
+// ═══ NAVIGATION
+function nav(id) {
+  document.querySelectorAll('.pg').forEach(e => e.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(e => e.classList.remove('on'));
+  document.getElementById('pg-'+id)?.classList.add('on');
+  document.getElementById('t-'+id)?.classList.add('on');
+  if (id === 'livraisons') afficherLivraisons();
+  if (id === 'recap')      afficherRecap();
+  if (id === 'dashboard')  afficherDashboard();
+  if (id === 'mandats')    afficherMandats();
+  if (id === 'params')     afficherParams();
+}
+
+// ═══ FRAIS TABLE
+function initFraisTable() {
+  const tbody = document.getElementById('frais-body');
+  if (!tbody) return;
+  tbody.innerHTML = FRAIS.map(f => {
+    const tvaBadge = f.fixe ? '<span class="tvab">Sans TVA</span>' : '';
+    const tvaCell  = f.fixe
+      ? '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:.68rem;color:var(--r)">Non</span>'
+      : '<select class="tva-sel" id="tva_'+f.id+'" onchange="calcFiche()" style="width:auto;border:none;border-bottom:1px solid var(--b);font-size:.72rem"><option value="oui">Oui (20%)</option><option value="non">Non</option></select>';
+    const defVal = f.defaut ? ' value="'+f.defaut+'"' : '';
+    return '<tr><td class="tdl">'+f.label+tvaBadge+'</td>'
+      +'<td>'+tvaCell+'</td>'
+      +'<td><input class="ni" type="number" id="f_'+f.id+'" placeholder="0" step="0.01"'+defVal+' oninput="calcFiche()"></td>'
+      +'<td class="cmp neg" id="fh_'+f.id+'">—</td></tr>';
+  }).join('');
+}
+
+// ═══ CALCUL FICHE
+document.getElementById('type_vente')?.addEventListener('change', function() {
+  document.getElementById('bloc-mandant').style.display = this.value === 'croise' ? '' : 'none';
+  calcFiche();
+});
+
+function calcFiche() {
+  const pv = getNum('prix_vente');
+  const pa = getNum('prix_achat');
+  const mvTtc = pv - pa;
+  const mvHt  = mvTtc / TVA;
+  const mb = document.getElementById('marge_brute');
+  if (mb) mb.value = (pv || pa) ? fmt(mvTtc) + ' TTC  /  ' + fmt(mvHt) + ' HT' : '';
+
+  let tfTtc = 0, tfHt = 0;
+  FRAIS.forEach(f => {
+    const avecTva = f.fixe ? false : getTva('tva_'+f.id);
+    const t = getNum('f_'+f.id);
+    const h = htDeTtc(t, avecTva);
+    setTxt('fh_'+f.id, -h);
+    tfTtc += t; tfHt += h;
+  });
+
+  setTxt('r-vttc', mvTtc); setTxt('r-vht', mvHt);
+  setTxt('r-fttc', -tfTtc); setTxt('r-fht', -tfHt);
+  const mnTtc = mvTtc - tfTtc;
+  const mnHt  = mvHt - tfHt;
+  setTxt('r-mttc', mnTtc); setTxt('r-mht', mnHt);
+  setTxt('r-base', mnHt);
+
+  const type    = document.getElementById('type_vente')?.value || 'classique';
+  const agent   = document.getElementById('agent')?.value || 'Agent';
+  const mandant = document.getElementById('agent_mandant')?.value || 'Agent mandant';
+  let cv = 0;
+
+  if (type === 'classique') {
+    cv = mnHt * 0.40;
+    document.getElementById('comm-info').textContent = 'Vente classique — ' + agent + ' perçoit 40% de la marge nette HT';
+    document.getElementById('row-croise').style.display = 'none';
+    document.getElementById('comm-lbl').textContent = 'Commission ' + agent + ' (40%)';
+  } else if (type === 'stock') {
+    cv = mnHt * 0.20;
+    document.getElementById('comm-info').textContent = 'Stock société — ' + agent + ' perçoit 20%';
+    document.getElementById('row-croise').style.display = 'none';
+    document.getElementById('comm-lbl').textContent = 'Commission ' + agent + ' (20%)';
+  } else {
+    cv = mnHt * 0.20;
+    const cm = mnHt * 0.20;
+    document.getElementById('comm-info').textContent = 'Mandat croisé — ' + agent + ' vend · ' + mandant + ' a rentré le mandat';
+    document.getElementById('row-croise').style.display = '';
+    document.getElementById('comm-lbl').textContent = 'Commission ' + agent + ' (vendeur 20%)';
+    document.getElementById('croise-det').innerHTML = agent + ' (vendeur) → <strong>' + fmt(cv) + '</strong><br>' + mandant + ' (mandant) → <strong>' + fmt(cm) + '</strong>';
+  }
+
+  setTxt('r-comm', cv);
+  const pe = getNum('prime_excep');
+  setTxt('r-total', cv + pe);
+  document.getElementById('total-lbl').textContent = type === 'croise' ? 'Total à verser à ' + agent + ' (vendeur)' : 'Total à verser à ' + agent;
+}
+
+// ═══ ENREGISTRER
+function enregistrer() {
+  const agent   = document.getElementById('agent')?.value;
+  const agence  = document.getElementById('agence')?.value;
+  const dateStr = document.getElementById('date_vente')?.value;
+  const vehicule= document.getElementById('vehicule')?.value;
+
+  if (!agent)   return toast('Sélectionne un agent', true);
+  if (!agence)  return toast('Sélectionne une agence', true);
+  if (!dateStr) return toast('Indique la date de la vente', true);
+  if (!vehicule)return toast('Indique le véhicule', true);
+
+  const pv = getNum('prix_vente');
+  const pa = getNum('prix_achat');
+  if (!pv && !pa) return toast('Indique les prix de vente et achat', true);
+
+  const mvHt = (pv - pa) / TVA;
+  let tfHt = 0;
+  FRAIS.forEach(f => { tfHt += htDeTtc(getNum('f_'+f.id), f.fixe ? false : getTva('tva_'+f.id)); });
+  const mnHt  = mvHt - tfHt;
+  const type  = document.getElementById('type_vente')?.value || 'classique';
+  const mandant = document.getElementById('agent_mandant')?.value || '';
+  let cv = 0, cm = 0;
+  if (type === 'classique')     cv = mnHt * 0.40;
+  else if (type === 'stock')    cv = mnHt * 0.20;
+  else { cv = mnHt * 0.20; cm = mnHt * 0.20; }
+
+  const vente = {
+    id: Date.now(),
+    date: dateStr, mois: getMois(dateStr),
+    agence, agent,
+    client: document.getElementById('client')?.value || '',
+    vehicule, type, mandant,
+    prix_vente: pv, prix_achat: pa,
+    marge_nette_ht: mnHt, total_frais_ht: tfHt,
+    comm_vendeur: cv, comm_mandant: cm,
+    prime_excep: getNum('prime_excep'),
+    livraison_statut: 'En attente',
+    date_livraison: null, mois_livraison: null,
+    avis_google: 'attente',
+  };
+
+  const ventes = loadVentes();
+  ventes.push(vente);
+  saveVentes(ventes);
+  updateBadge();
+  toast('✔ Vente enregistrée — ' + vehicule);
+  resetFiche(true);
+}
+
+function resetFiche(silent) {
+  if (!silent && !confirm('Réinitialiser la fiche ?')) return;
+  ['agence','agent','agent_mandant'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  document.getElementById('type_vente').value = 'classique';
+  document.getElementById('bloc-mandant').style.display = 'none';
+  ['date_vente','client','vehicule','prix_vente','prix_achat','prime_excep'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  FRAIS.forEach(f => {
+    const e = document.getElementById('f_'+f.id); if (e) e.value = f.defaut || '';
+    const ts = document.getElementById('tva_'+f.id); if (ts) ts.value = 'oui';
+  });
+  const mb = document.getElementById('marge_brute'); if (mb) mb.value = '';
+  ['r-vttc','r-vht','r-fttc','r-fht','r-mttc','r-mht','r-base','r-comm','r-total'].forEach(id => {
+    const e = document.getElementById(id); if (e) { e.textContent = '—'; e.className = 'cmp'; }
+  });
+  FRAIS.forEach(f => { const e = document.getElementById('fh_'+f.id); if (e) { e.textContent = '—'; e.className = 'cmp neg'; } });
+  const ci = document.getElementById('comm-info'); if (ci) ci.textContent = '—';
+  const rc = document.getElementById('row-croise'); if (rc) rc.style.display = 'none';
+  // Re-select agent if logged in as agent
+  if (CURRENT_USER && CURRENT_USER !== 'Julien') {
+    const agentSel = document.getElementById('agent'); if (agentSel) agentSel.value = CURRENT_USER;
+  }
+  calcFiche();
+}
+
+// ═══ BADGE
+function updateBadge() {
+  const n = loadVentes().filter(v => v.livraison_statut === 'En attente').length;
+  const b = document.getElementById('livr-badge');
+  if (b) { b.textContent = n; b.style.display = n > 0 ? '' : 'none'; }
+}
+
+// ═══ MOIS SELECT
+function remplirMois(selId) {
+  const ventes  = loadVentes();
+  const allMois = Array.from(new Set(
+    ventes.map(v => v.mois).concat(ventes.filter(v => v.mois_livraison).map(v => v.mois_livraison)).filter(Boolean)
+  )).sort().reverse();
+  const curMois = getMois(new Date().toISOString().slice(0,10));
+  if (!allMois.includes(curMois)) allMois.push(curMois);
+  const sel = document.getElementById(selId);
+  if (!sel) return curMois;
+  const prev = sel.value;
+  sel.innerHTML = '';
+  allMois.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m; o.textContent = lblMois(m);
+    if (m === (prev || allMois[0])) o.selected = true;
+    sel.appendChild(o);
+  });
+  return sel.value;
+}
+
+// ═══ LIVRAISONS
+function afficherLivraisons() {
+  const mois   = remplirMois('livr-mois');
+  const ventes = loadVentes();
+  const zone   = document.getElementById('livr-zone');
+  if (!zone) return;
+
+  const enAttente    = ventes.filter(v => v.livraison_statut === 'En attente');
+  const livresCeMois = ventes.filter(v => v.livraison_statut === 'Livré' && v.mois_livraison === mois);
+  const liste = enAttente.concat(livresCeMois);
+
+  const cpt = document.getElementById('livr-cpt');
+  if (cpt) cpt.textContent = enAttente.length + ' en attente · ' + livresCeMois.length + ' livré(s) ce mois';
+
+  if (!liste.length) {
+    zone.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gm);font-family:IBM Plex Mono,monospace;font-size:.76rem">Aucune livraison à afficher.</div>';
+    return;
+  }
+
+  zone.innerHTML = liste.map(v => {
+    const done = v.livraison_statut === 'Livré';
+    const avis = v.avis_google || 'attente';
+    const avisCol = avis === 'oui' ? 'var(--v)' : avis === 'non' ? 'var(--r)' : '#b45309';
+    const avisLbl = avis === 'oui' ? '✅ Avis reçu (+30 €)' : avis === 'non' ? '❌ Pas d\'avis' : '⏳ En attente';
+
+    const checkHtml = !done
+      ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.28rem;margin-top:.45rem">'
+        + [['cg','🪪 Carte grise'],['histovec','📋 Histovec'],['revision','🔧 Révision < 6 mois'],['garantie','🛡️ Garantie']].map(item =>
+            '<label style="display:flex;align-items:center;gap:.32rem;font-size:.7rem;cursor:pointer;background:var(--bg);padding:.28rem .45rem;border:1px solid var(--b)">'
+            + '<input type="checkbox" id="ck_'+v.id+'_'+item[0]+'" style="accent-color:var(--v);width:12px;height:12px;border-bottom:none"> '+item[1]+'</label>'
+          ).join('')
+        + '</div>'
+        + '<div style="margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--b)">'
+        + '<div style="font-size:.57rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.28rem">Avis Google reçu ?</div>'
+        + '<div style="display:flex;gap:.9rem">'
+        + '<label style="display:flex;align-items:center;gap:.28rem;font-size:.75rem;cursor:pointer"><input type="radio" name="av_'+v.id+'" value="oui" style="border-bottom:none;accent-color:var(--v)"> Oui (+30 €)</label>'
+        + '<label style="display:flex;align-items:center;gap:.28rem;font-size:.75rem;cursor:pointer"><input type="radio" name="av_'+v.id+'" value="non" style="border-bottom:none;accent-color:var(--r)"> Non</label>'
+        + '<label style="display:flex;align-items:center;gap:.28rem;font-size:.75rem;cursor:pointer"><input type="radio" name="av_'+v.id+'" value="attente" checked style="border-bottom:none;accent-color:#b45309"> En attente</label>'
+        + '</div></div>'
+      : '<div style="margin-top:.35rem;font-family:IBM Plex Mono,monospace;font-size:.7rem;color:'+avisCol+'">'+avisLbl
+        + (avis === 'attente'
+          ? ' <button class="btn bs" style="padding:.15rem .4rem;font-size:.52rem;margin-left:.35rem" onclick="toggleAvis('+v.id+',\'oui\')">✅ Reçu</button>'
+            + ' <button class="btn bd" style="padding:.15rem .4rem;font-size:.52rem;margin-left:.2rem" onclick="toggleAvis('+v.id+',\'non\')">❌ Pas d\'avis</button>' : '')
+        + '</div>';
+
+    return '<div class="lc'+(done?' ld':'')+'">'
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.9rem;flex-wrap:wrap">'
+      + '<div style="flex:1">'
+      + '<div style="font-weight:600;font-size:.88rem;margin-bottom:.22rem">'+v.vehicule+' <span class="tag '+(done?'tgl':'tga')+'">'+(done?'Livré':'En attente')+'</span></div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:.62rem;color:var(--gm)">'+v.agent+' · '+(v.client||'—')+' · Vente le '+fmtDate(v.date)+'</div>'
+      + '<div style="font-family:IBM Plex Mono,monospace;font-size:.88rem;font-weight:600;color:var(--v);margin:.3rem 0">'+fmt(v.marge_nette_ht)+'</div>'
+      + '<div style="background:var(--bg);border:1px solid var(--b);padding:.5rem .7rem">'
+      + '<div style="font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.22rem">Checklist & Avis</div>'
+      + checkHtml+'</div></div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;min-width:155px">'
+      + (!done
+        ? '<input type="date" id="ld_'+v.id+'" value="'+new Date().toISOString().slice(0,10)+'" style="border:1px solid var(--b);padding:.22rem .45rem;font-family:IBM Plex Mono,monospace;font-size:.72rem;outline:none;background:var(--w)">'
+          + '<button class="btn bs" style="width:100%" onclick="validerLivraison('+v.id+')">✔ Valider</button>'
+        : '<span style="font-family:IBM Plex Mono,monospace;font-size:.68rem;color:var(--v);text-align:right">✅ Livré le<br>'+fmtDate(v.date_livraison)+'</span>'
+          + '<button class="btn bd" style="font-size:.53rem" onclick="annulerLivraison('+v.id+')">Annuler</button>')
+      + '</div></div></div>';
+  }).join('');
+}
+
+function validerLivraison(id) {
+  const dl = document.getElementById('ld_'+id)?.value;
+  if (!dl) return toast('Sélectionne une date de livraison', true);
+  const noms = {cg:'Carte grise',histovec:'Histovec',revision:'Révision',garantie:'Garantie'};
+  const manq = ['cg','histovec','revision','garantie'].filter(k => !document.getElementById('ck_'+id+'_'+k)?.checked);
+  if (manq.length) return toast('Checklist incomplète : ' + manq.map(k => noms[k]).join(', '), true);
+  const avis = document.querySelector('input[name="av_'+id+'"]:checked');
+  if (!avis) return toast('Indique le statut avis Google', true);
+  const ventes = loadVentes();
+  const idx = ventes.findIndex(v => v.id === id);
+  if (idx < 0) return;
+  ventes[idx].livraison_statut = 'Livré';
+  ventes[idx].date_livraison   = dl;
+  ventes[idx].mois_livraison   = getMois(dl);
+  ventes[idx].avis_google      = avis.value;
+  saveVentes(ventes);
+  updateBadge();
+  afficherLivraisons();
+  toast('🚗 Livraison validée !');
+}
+
+function annulerLivraison(id) {
+  if (!confirm('Annuler la livraison ?')) return;
+  const ventes = loadVentes();
+  const idx = ventes.findIndex(v => v.id === id);
+  if (idx < 0) return;
+  ventes[idx].livraison_statut = 'En attente';
+  ventes[idx].date_livraison   = null;
+  ventes[idx].mois_livraison   = null;
+  saveVentes(ventes);
+  updateBadge();
+  afficherLivraisons();
+  toast('Livraison annulée');
+}
+
+function toggleAvis(id, val) {
+  const ventes = loadVentes();
+  const idx = ventes.findIndex(v => v.id === id);
+  if (idx < 0) return;
+  ventes[idx].avis_google = val;
+  saveVentes(ventes);
+  afficherLivraisons();
+  toast(val === 'oui' ? '✅ Prime avis Google ajoutée' : 'Avis mis à jour');
+}
+
+// ═══ RECAP AGENT
+function afficherRecap() {
+  const mois   = remplirMoisMandats('recap-mois');
+  const ventes = loadVentes();
+  const mandats= loadMandats();
+  const params = loadParams();
+  const zone   = document.getElementById('recap-zone');
+  if (!zone) return;
+
+  const vm  = ventes.filter(v => v.mois === mois);
+  const mm  = mandats.filter(m => m.mois === mois);
+  const nb  = vm.length;
+  const nbM = mm.length;
+  const marge  = vm.reduce((s,v) => s + (v.marge_nette_ht||0), 0);
+  const vl     = ventes.filter(v => v.mois_livraison === mois);
+  const comm   = vl.reduce((s,v) => s + (v.comm_vendeur||0), 0);
+  const avisGain = vl.reduce((s,v) => s + (v.avis_google==='oui'?30:0), 0);
+  const excep    = vl.reduce((s,v) => s + (v.prime_excep||0), 0);
+  const avisAtt  = vl.filter(v => v.livraison_statut==='Livré' && (!v.avis_google||v.avis_google==='attente')).length;
+  const ag = Object.values(params)[0] || {obj_ventes:10,obj_mandats:8,prime_obj_ventes:250,prime_obj_mandats:150,bonus_dep:100};
+  const obj_v = ag.obj_ventes||10;
+  const obj_m = ag.obj_mandats||8;
+  const primeOv  = nb>=obj_v ? (ag.prime_obj_ventes||250) : 0;
+  const primeOm  = nbM>=obj_m ? (ag.prime_obj_mandats||150) : 0;
+  const bonus    = nb>obj_v ? ((nb-obj_v)*(ag.bonus_dep||100)) : 0;
+  const primePal = palier(marge);
+  const total = comm+avisGain+excep+primeOv+primeOm+bonus+primePal;
+  const pctV    = obj_v ? Math.min(100,Math.round(nb/obj_v*100)) : 0;
+  const pctM    = obj_m ? Math.min(100,Math.round(nbM/obj_m*100)) : 0;
+  const pctMarge= Math.min(100,Math.round(marge/25000*100));
+
+  const objCards = [
+    {icon:'🚗',label:'Ventes signées',   cur:nb,        tot:obj_v,       pct:pctV,     detail:nb>=obj_v?'✅ Objectif atteint !':(obj_v-nb)+' manquante(s)'},
+    {icon:'📋',label:'Mandats rentrés',  cur:nbM,       tot:obj_m,       pct:pctM,     detail:nbM>=obj_m?'✅ Objectif atteint !':(obj_m-nbM)+' manquant(s)'},
+    {icon:'💶',label:'Marge nette HT',   cur:fmt(marge),tot:fmt(25000),  pct:pctMarge, detail:'Prime palier actuelle : '+fmt(primePal)},
+  ];
+
+  const objHtml = '<div class="og">'
+    + objCards.map(o => {
+        const cl       = o.pct>=100?' ok':'';
+        const barColor = o.pct>=100?'linear-gradient(90deg,#1e5a3a,var(--v))':'linear-gradient(90deg,var(--ad),var(--a))';
+        return '<div class="oc'+cl+'">'
+          + '<div class="oi">'+o.icon+'</div><div class="ol">'+o.label+'</div>'
+          + '<div class="on2" style="color:'+(o.pct>=100?'var(--v)':'var(--n)')+'">'+o.cur+'</div>'
+          + '<div style="font-family:IBM Plex Mono,monospace;font-size:.72rem;color:var(--gm)">/ '+o.tot+'</div>'
+          + '<div class="pw"><div class="pb" style="width:'+o.pct+'%;background:'+barColor+'"></div></div>'
+          + '<div class="os">'+o.pct+'% — '+o.detail+'</div></div>';
+      }).join('')
+    + '</div>';
+
+  const payHtml = '<div style="background:var(--bg);padding:.85rem .95rem;border:1px solid var(--b)">'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:.58rem;color:var(--gm);margin-bottom:.5rem;background:rgba(200,169,110,.1);padding:.3rem .5rem;border-left:2px solid var(--a)">💡 Paye = livraisons validées ce mois</div>'
+    + '<div class="pr"><span style="color:var(--gm)">Commission vendeur</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(comm)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Primes avis Google'+(avisAtt?' ('+avisAtt+' en attente)':'')+'</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(avisGain)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Primes exceptionnelles</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(excep)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime palier marge</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primePal>0?'var(--v)':'var(--gm)')+'">'+fmt(primePal)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime objectif ventes '+(nb>=obj_v?'✅':'⏳')+'</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primeOv>0?'var(--v)':'var(--gm)')+'">'+fmt(primeOv)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime objectif mandats '+(nbM>=obj_m?'✅':'⏳')+'</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primeOm>0?'var(--v)':'var(--gm)')+'">'+fmt(primeOm)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Bonus dépassement '+(nb>obj_v?'(+'+(nb-obj_v)+')':'')+'</span><span style="font-family:IBM Plex Mono,monospace;color:'+(bonus>0?'var(--v)':'var(--gm)')+'">'+fmt(bonus)+'</span></div>'
+    + '</div>'
+    + '<div class="ptot"><span>💰 Total estimé ce mois</span><span>'+fmt(total)+'</span></div>';
+
+  const ventesHtml = vm.length === 0
+    ? '<div style="text-align:center;padding:1.5rem;color:var(--gm);font-family:IBM Plex Mono,monospace;font-size:.76rem">Aucune vente ce mois.</div>'
+    : '<table class="vt"><thead><tr><th>Véhicule</th><th style="text-align:right">Marge HT</th><th style="text-align:right">Livraison</th></tr></thead><tbody>'
+      + vm.map(v => '<tr>'
+          + '<td><div style="font-weight:500">'+v.vehicule+'</div><div style="font-size:.65rem;color:var(--gm)">'+v.client+'</div></td>'
+          + '<td style="font-family:IBM Plex Mono,monospace;text-align:right;color:var(--v)">'+fmt(v.marge_nette_ht)+'</td>'
+          + '<td style="text-align:right"><span class="tag '+(v.livraison_statut==='Livré'?'tgl':'tga')+'">'+v.livraison_statut+'</span></td>'
+          + '</tr>').join('')
+      + '</tbody></table>';
+
+  zone.innerHTML = objHtml
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem">'
+    + '<div><div class="stl" style="margin-bottom:.65rem">Ma paye estimée — '+lblMois(mois)+'</div>'+payHtml+'</div>'
+    + '<div><div class="stl" style="margin-bottom:.65rem">Mes ventes ('+vm.length+')</div>'+ventesHtml+'</div>'
+    + '</div>';
+}
+
+// ═══ DASHBOARD
+let curAgentTab = AGENTS[0];
+
+function afficherDashboard() {
+  const mois   = remplirMois('dash-mois');
+  const vue    = document.getElementById('dash-vue')?.value || 'vente';
+  const ventes = loadVentes();
+  const params = loadParams();
+
+  const vm = vue === 'vente'
+    ? ventes.filter(v => v.mois === mois)
+    : ventes.filter(v => v.mois_livraison === mois);
+
+  const totalMarge = vm.reduce((s,v) => s+(v.marge_nette_ht||0), 0);
+  const totalComm  = vm.reduce((s,v) => s+(v.comm_vendeur||0)+(v.comm_mandant||0), 0);
+  const nbV  = vm.length;
+  const nbL  = vm.filter(v => v.livraison_statut==='Livré').length;
+  const avisAtt = vm.filter(v => v.avis_google==='attente'&&v.livraison_statut==='Livré').length;
+
+  const kz = document.getElementById('kpi-zone');
+  if (kz) kz.innerHTML = ''
+    + '<div class="kpi hl"><div class="kl">Marge nette HT</div><div class="kv">'+fmt(totalMarge)+'</div><div class="ks">'+nbV+' opération(s)</div></div>'
+    + '<div class="kpi ok"><div class="kl">Commissions à verser</div><div class="kv">'+fmt(totalComm)+'</div><div class="ks">Tous agents</div></div>'
+    + '<div class="kpi nf"><div class="kl">Livraisons</div><div class="kv">'+nbL+' / '+nbV+'</div><div class="ks">'+(nbV-nbL)+' en attente</div></div>'
+    + '<div class="kpi wn"><div class="kl">Avis Google en attente</div><div class="kv">'+avisAtt+'</div><div class="ks">À confirmer</div></div>';
+
+  const agences = ['Agence Saint-Rémy-de-Provence','Agence Aix-en-Provence'];
+  const az = document.getElementById('ag-zone');
+  if (az) az.innerHTML = agences.map(ag => {
+    const va = vm.filter(v => v.agence===ag);
+    const m  = va.reduce((s,v) => s+(v.marge_nette_ht||0), 0);
+    const c  = va.reduce((s,v) => s+(v.comm_vendeur||0), 0);
+    const l  = va.filter(v => v.livraison_statut==='Livré').length;
+    return '<div class="ac"><h4>'+ag+'</h4>'
+      + '<div class="ar"><span>Opérations</span><span style="font-family:IBM Plex Mono,monospace">'+va.length+'</span></div>'
+      + '<div class="ar"><span>Livraisons</span><span style="font-family:IBM Plex Mono,monospace">'+l+'</span></div>'
+      + '<div class="ar"><span>Marge nette HT</span><span style="font-family:IBM Plex Mono,monospace;color:var(--v)">'+fmt(m)+'</span></div>'
+      + '<div class="ar"><span>Commissions</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(c)+'</span></div>'
+      + '</div>';
+  }).join('');
+
+  const tabsEl = document.getElementById('ag-tabs');
+  if (tabsEl) {
+    tabsEl.innerHTML = '';
+    AGENTS.forEach(a => {
+      const nb2 = vm.filter(v => v.agent===a).length;
+      const btn = document.createElement('button');
+      btn.className = 'atb' + (a === curAgentTab ? ' on' : '');
+      btn.innerHTML = a + (nb2 ? ' <span style="background:var(--a);color:var(--n);font-size:.5rem;padding:.1rem .28rem;margin-left:.18rem">'+nb2+'</span>' : '');
+      btn.onclick = function() {
+        curAgentTab = a;
+        document.querySelectorAll('.atb').forEach(t => t.classList.remove('on'));
+        btn.classList.add('on');
+        afficherAgent(vm, a, params);
+      };
+      tabsEl.appendChild(btn);
+    });
+  }
+  afficherAgent(vm, curAgentTab, params);
+}
+
+function afficherAgent(vm, agent, params) {
+  const zone = document.getElementById('ag-zone2');
+  if (!zone) return;
+  const p = params[agent] || {obj_ventes:10,obj_mandats:8,prime_obj_ventes:250,prime_obj_mandats:150,bonus_dep:100};
+
+  const moisSel    = document.getElementById('dash-mois')?.value || getMois(new Date().toISOString().slice(0,10));
+  const tousMandats= loadMandats().filter(m => m.mois === moisSel && m.agent === agent);
+  const mandatsCroises = vm.filter(v => v.type==='croise' && v.mandant===agent);
+
+  const ventes   = vm.filter(v => v.agent===agent);
+  const marge    = ventes.reduce((s,v) => s+(v.marge_nette_ht||0), 0);
+  const comm     = ventes.reduce((s,v) => s+(v.comm_vendeur||0), 0);
+  const commM    = mandatsCroises.reduce((s,v) => s+(v.comm_mandant||0), 0);
+  const avisGain = ventes.reduce((s,v) => s+(v.avis_google==='oui'?30:0), 0);
+  const excep    = ventes.reduce((s,v) => s+(v.prime_excep||0), 0);
+  const avisAtt  = ventes.filter(v => v.livraison_statut==='Livré'&&(!v.avis_google||v.avis_google==='attente')).length;
+  const nb    = ventes.length;
+  const nl    = ventes.filter(v => v.livraison_statut==='Livré').length;
+  const nbM   = tousMandats.length;
+  const obj_v = p.obj_ventes||10;
+  const obj_m = p.obj_mandats||8;
+  const primePal = palier(marge);
+  const primeOv  = nb>=obj_v?(p.prime_obj_ventes||250):0;
+  const primeOm  = nbM>=obj_m?(p.prime_obj_mandats||150):0;
+  const bonus    = nb>obj_v?((nb-obj_v)*(p.bonus_dep||100)):0;
+  const total    = comm+commM+avisGain+excep+primePal+primeOv+primeOm+bonus;
+  const pctV     = obj_v?Math.min(100,Math.round(nb/obj_v*100)):0;
+  const pctMarg  = Math.min(100,Math.round(marge/25000*100));
+  const pctMand  = obj_m?Math.min(100,Math.round(nbM/obj_m*100)):0;
+  const barV     = nb>=obj_v?'linear-gradient(90deg,#1e5a3a,var(--v))':'linear-gradient(90deg,var(--ad),var(--a))';
+
+  const ventesHtml = ventes.length === 0
+    ? '<div style="text-align:center;padding:1.5rem;color:var(--gm);font-family:IBM Plex Mono,monospace;font-size:.76rem">Aucune vente ce mois.</div>'
+    : '<table class="vt"><thead><tr><th>Date</th><th>Véhicule</th><th>Type</th><th style="text-align:right">Marge HT</th><th style="text-align:right">Commission</th><th style="text-align:right">Statut</th><th></th></tr></thead><tbody>'
+      + ventes.map(v => '<tr>'
+          + '<td style="font-family:IBM Plex Mono,monospace;font-size:.68rem;white-space:nowrap">'+fmtDate(v.date)+'</td>'
+          + '<td><div style="font-weight:500;font-size:.76rem">'+v.vehicule+'</div><div style="font-size:.65rem;color:var(--gm)">'+v.client+'</div></td>'
+          + '<td><span class="tag '+(v.type==='classique'?'tgc':v.type==='stock'?'tgs':'tgcr')+'">'+v.type+'</span></td>'
+          + '<td style="font-family:IBM Plex Mono,monospace;text-align:right;color:'+(v.marge_nette_ht>=0?'var(--v)':'var(--r)')+'">'+fmt(v.marge_nette_ht)+'</td>'
+          + '<td style="font-family:IBM Plex Mono,monospace;text-align:right">'+fmt(v.comm_vendeur)+'</td>'
+          + '<td style="text-align:right"><span class="tag '+(v.livraison_statut==='Livré'?'tgl':'tga')+'">'+v.livraison_statut+'</span></td>'
+          + '<td><button class="delbtn" onclick="supprimerVente('+v.id+')" title="Supprimer">✕</button></td>'
+          + '</tr>').join('')
+      + '</tbody></table>';
+
+  zone.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1rem">'
+    + '<div>'
+    + '<div class="stl" style="margin-bottom:.65rem">Progression</div>'
+    + '<div style="background:var(--w);border:1px solid var(--b);padding:.85rem .95rem;margin-bottom:.7rem">'
+    + '<div style="font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.28rem">Ventes / Livraisons</div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:1.1rem;font-weight:700;color:'+(nb>=obj_v?'var(--v)':'var(--n)')+'">'+nb+' <span style="font-size:.75rem;color:var(--gm)">/ '+obj_v+' obj.</span> · <span style="color:var(--v);font-size:.82rem">'+nl+' livré(s)</span></div>'
+    + '<div class="pw"><div class="pb" style="width:'+pctV+'%;background:'+barV+'"></div></div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:.6rem;color:var(--gm)">'+pctV+'% — '+(nb>=obj_v?'✅ Objectif atteint':'⏳ '+(obj_v-nb)+' manquante(s)')+'</div></div>'
+    + '<div style="background:var(--w);border:1px solid var(--b);padding:.85rem .95rem;margin-top:.6rem">'
+    + '<div style="font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.28rem">Mandats rentrés</div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:1.05rem;font-weight:700;color:'+(nbM>=obj_m?'var(--v)':'var(--n)')+'">'+nbM+' <span style="font-size:.75rem;color:var(--gm)">/ '+obj_m+' obj.</span></div>'
+    + '<div class="pw"><div class="pb" style="width:'+pctMand+'%;background:linear-gradient(90deg,var(--ad),var(--a))"></div></div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:.6rem;color:var(--gm)">'+pctMand+'% — '+(nbM>=obj_m?'✅ Objectif atteint':'⏳ '+(obj_m-nbM)+' manquant(s)')+'</div></div>'
+    + '<div style="background:var(--w);border:1px solid var(--b);padding:.85rem .95rem;margin-top:.6rem">'
+    + '<div style="font-size:.56rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gm);margin-bottom:.28rem">Marge nette HT</div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:1.05rem;font-weight:700;color:var(--ad)">'+fmt(marge)+'</div>'
+    + '<div class="pw"><div class="pb" style="width:'+pctMarg+'%;background:linear-gradient(90deg,var(--ad),var(--a))"></div></div>'
+    + '<div style="font-family:IBM Plex Mono,monospace;font-size:.6rem;color:var(--gm)">'+pctMarg+'% vers 25 000 € · Prime : '+fmt(primePal)+(avisAtt?' · '+avisAtt+' avis en attente':'')+'</div>'
+    + '</div></div>'
+    + '<div>'
+    + '<div class="stl" style="margin-bottom:.65rem">Paye ce mois</div>'
+    + '<div style="background:var(--bg);padding:.85rem .95rem;border:1px solid var(--b)">'
+    + '<div class="pr"><span style="color:var(--gm)">Commission vendeur</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(comm)+'</span></div>'
+    + (commM>0?'<div class="pr"><span style="color:var(--gm)">Commission mandant</span><span style="font-family:IBM Plex Mono,monospace;color:var(--ad)">'+fmt(commM)+'</span></div>':'')
+    + '<div class="pr"><span style="color:var(--gm)">Primes avis Google'+(avisAtt?' ('+avisAtt+' att.)':'')+'</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(avisGain)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Primes exceptionnelles</span><span style="font-family:IBM Plex Mono,monospace">'+fmt(excep)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime palier marge</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primePal>0?'var(--v)':'var(--gm)')+'">'+fmt(primePal)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime obj. ventes '+(nb>=obj_v?'✅':'⏳')+'</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primeOv>0?'var(--v)':'var(--gm)')+'">'+fmt(primeOv)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Prime obj. mandats '+(nbM>=obj_m?'✅':'⏳')+'</span><span style="font-family:IBM Plex Mono,monospace;color:'+(primeOm>0?'var(--v)':'var(--gm)')+'">'+fmt(primeOm)+'</span></div>'
+    + '<div class="pr"><span style="color:var(--gm)">Bonus dépassement</span><span style="font-family:IBM Plex Mono,monospace;color:'+(bonus>0?'var(--v)':'var(--gm)')+'">'+fmt(bonus)+'</span></div>'
+    + '</div>'
+    + '<div class="ptot"><span>💰 TOTAL À VERSER</span><span>'+fmt(total)+'</span></div>'
+    + '</div></div>'
+    + '<div class="stl" style="margin-bottom:.65rem">Ventes de '+agent+' ('+ventes.length+')</div>'
+    + ventesHtml;
+}
+
+function supprimerVente(id) {
+  if (!confirm('Supprimer cette vente définitivement ?')) return;
+  addDeleted(SK, id);
+  const ventes = loadVentes().filter(v => v.id !== id);
+  saveVentes(ventes);
+  updateBadge();
+  afficherDashboard();
+  toast('Vente supprimée');
+}
+
+// ═══ PARAMS
+function afficherParams() {
+  const p    = loadParams();
+  const zone = document.getElementById('param-zone');
+  if (!zone) return;
+  zone.innerHTML = AGENTS.map(a => {
+    const ag = p[a] || {obj_ventes:10,obj_mandats:8,prime_obj_ventes:250,prime_obj_mandats:150,bonus_dep:100};
+    return '<div class="pc"><h4>👤 '+a+'</h4>'
+      + '<div class="pf"><label>Objectif ventes / mois</label><input type="number" id="pov_'+a+'" value="'+(ag.obj_ventes||10)+'" min="0" step="1"></div>'
+      + '<div class="pf"><label>Objectif mandats / mois</label><input type="number" id="pom_'+a+'" value="'+(ag.obj_mandats||8)+'" min="0" step="1"></div>'
+      + '<div class="pf"><label>Prime objectif ventes (€)</label><input type="number" id="ppv_'+a+'" value="'+(ag.prime_obj_ventes||250)+'" min="0" step="10"></div>'
+      + '<div class="pf"><label>Prime objectif mandats (€)</label><input type="number" id="ppm_'+a+'" value="'+(ag.prime_obj_mandats||150)+'" min="0" step="10"></div>'
+      + '<div class="pf"><label>Bonus par vente dépassée (€)</label><input type="number" id="ppb_'+a+'" value="'+(ag.bonus_dep||100)+'" min="0" step="10"></div>'
+      + '</div>';
+  }).join('');
+}
+
+function sauvegarderParams() {
+  const p = {};
+  AGENTS.forEach(a => {
+    p[a] = {
+      obj_ventes:        parseInt(document.getElementById('pov_'+a)?.value)||0,
+      obj_mandats:       parseInt(document.getElementById('pom_'+a)?.value)||0,
+      prime_obj_ventes:  parseFloat(document.getElementById('ppv_'+a)?.value)||0,
+      prime_obj_mandats: parseFloat(document.getElementById('ppm_'+a)?.value)||0,
+      bonus_dep:         parseFloat(document.getElementById('ppb_'+a)?.value)||0,
+    };
+  });
+  saveParams(p);
+  toast('✅ Paramètres enregistrés');
+}
+
+// ═══ INIT
+initFraisTable();
+calcFiche();
+updateBadge();
+updateMandatBadge();
+document.getElementById('m-date').value = new Date().toISOString().slice(0,10);
+const savedUser = localStorage.getItem('aa_user');
+if (savedUser) seConnecter(savedUser);
+</script>
+</body>
+</html>
